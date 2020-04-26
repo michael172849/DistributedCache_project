@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+
+message Request {
+    int64 client_id = 1;
+    string request_url = 2;
+    string data = 3;    // This field is optional for getContent
+}
+
+message Response {
+    enum StatusCode {
+        OK = 1;
+        ERROR = 2;
+    }
+    StatusCode status = 1;
+    string request_url = 2;
+    string data = 3;
+}
