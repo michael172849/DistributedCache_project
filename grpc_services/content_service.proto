@@ -1,0 +1,7 @@
+syntax = "proto3";
+import "payload.proto";
+
+service ContentService {
+    rpc setContent (stream Request) returns (Response);
+    rpc getContent (Request) returns (stream Response);
+}

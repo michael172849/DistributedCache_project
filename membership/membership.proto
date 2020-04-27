@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+service MembershipManagement {
+    // Send heartbeat
+    // A client to server function call
+    rpc SendHeartBeat(HeartBeat) returns (ResultMsg) {}
+}
+
+
+message HeartBeat {
+    string address = 1;
+    string port    = 2;
+}
+
+message ResultMsg {
+    bool succeed = 1;
+    string msg   = 2;
+}
