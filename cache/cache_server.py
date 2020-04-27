@@ -1,11 +1,11 @@
-import sys
-import os
-sys.path.append(os.path.abspath("."))
-from membership import membership_pb2_grpc
-from membership import membership_pb2
-
 import logging
+import os
+import sys
+
 import grpc
+
+sys.path.append(os.path.abspath("."))
+from grpc_services.membership import membership_pb2, membership_pb2_grpc
 
 def simple_send_heartbeat(stub):
     heartBeat = membership_pb2.HeartBeat(address="123", port="123")
