@@ -1,11 +1,12 @@
-import grpc
-from concurrent import futures
 import logging
+import os
+import sys
+from concurrent import futures
 
-import os, sys
+import grpc
+
 sys.path.append(os.path.abspath("."))
-from membership import membership_pb2_grpc
-from membership import membership_pb2
+from grpc_services.membership import membership_pb2, membership_pb2_grpc
 
 class MembershipManager(membership_pb2_grpc.MembershipManagementServicer):
     def SendHeartBeat(self, request, context):
