@@ -5,7 +5,7 @@ import sys
 import grpc
 
 sys.path.append(os.path.abspath("."))
-from grpc_services.membership import membership_pb2, membership_pb2_grpc
+from grpc_services import membership_pb2, membership_pb2_grpc
 
 def simple_send_heartbeat(stub):
     heartBeat = membership_pb2.HeartBeat(address="123", port="123")

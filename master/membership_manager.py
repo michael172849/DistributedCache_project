@@ -6,7 +6,7 @@ from concurrent import futures
 import grpc
 
 sys.path.append(os.path.abspath("."))
-from grpc_services.membership import membership_pb2, membership_pb2_grpc
+from grpc_services import membership_pb2, membership_pb2_grpc
 
 class MembershipManager(membership_pb2_grpc.MembershipManagementServicer):
     def SendHeartBeat(self, request, context):

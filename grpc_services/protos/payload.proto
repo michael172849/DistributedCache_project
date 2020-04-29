@@ -9,8 +9,8 @@ message Request {
 
 message Response {
     enum StatusCode {
-        OK = 1;
-        ERROR = 2;
+        OK = 0;
+        ERROR = 1;
     }
     StatusCode status = 1;
     string request_url = 2;
