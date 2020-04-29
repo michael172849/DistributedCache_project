@@ -26,7 +26,7 @@ class ContentServer(content_service_pb2_grpc.ContentServiceServicer):
 
         # make response
         response = payload_pb2.Response (
-            status = payload_pb2.OK
+            status = payload_pb2.Response.StatusCode.OK
         )
         return response
 
@@ -36,7 +36,7 @@ class ContentServer(content_service_pb2_grpc.ContentServiceServicer):
         key = request.request_url
         value = self.contentStore[key]
         response = payload_pb2.Response(
-            status = payload_pb2.OK,
+            status = payload_pb2.Response.StatusCode.OK,
             request_url = key,
             data = value
         )

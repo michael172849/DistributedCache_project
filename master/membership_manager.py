@@ -7,6 +7,7 @@ import grpc
 
 sys.path.append(os.path.abspath("."))
 from grpc_services import membership_pb2, membership_pb2_grpc
+import constant
 
 class MembershipManager(membership_pb2_grpc.MembershipManagementServicer):
     def SendHeartBeat(self, request, context):
@@ -20,7 +21,7 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     membership_pb2_grpc.add_MembershipManagementServicer_to_server(
         MembershipManager(), server)
-    server.add_insecure_port('[::]:50051')
+    server.add_insecure_port(constant.PROJECT_DOMAIN + constant.HEARTBEAT_PORT)
     server.start()
     server.wait_for_termination()
 
