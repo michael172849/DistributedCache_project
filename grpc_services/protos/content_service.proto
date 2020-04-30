@@ -3,5 +3,5 @@ import "payload.proto";
 
 service ContentService {
     rpc setContent (stream Request) returns (Response);
-    rpc getContent (Request) returns (stream Response);
+    rpc getContent (Request) returns (Response);
 }
