@@ -34,12 +34,18 @@ class ContentServer(content_service_pb2_grpc.ContentServiceServicer):
         logging.debug("Content Server get content for client (%d) for url %s" % 
             (request.client_id, request.request_url))
         key = request.request_url
-        value = self.contentStore[key]
-        response = payload_pb2.Response(
-            status = payload_pb2.Response.StatusCode.OK,
-            request_url = key,
-            data = value
-        )
+        if (key in self.contentStore):
+            value = self.contentStore[value]
+            response = payload_pb2.Response(
+                status = payload_pb2.Response.StatusCode.OK,
+                request_url = key,
+                data = value
+            )
+        else:
+            response = payload_pb2.Response(
+                status = payload_pb2.Response.StatusCode.NO_SUCH_KEY_ERROR,
+                request_url = key,
+            )
         return response
 
 def main():
@@ -53,5 +59,5 @@ def main():
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    logging.basicConfig()
+    logging.basicConfig(level=logging.DEBUG)
     main()
