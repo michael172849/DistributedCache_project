@@ -44,6 +44,9 @@ class HashRing:
     def _get_cache_server_url(self, url):
         return self._val_to_serv_url.ceiling_item(self._hash_url(url))[1]  # get the cache server that is clockwise
         
+    def _get_clockwise_cache_server(self, val):
+        return self._val_to_serv_url.ceiling_item(val)[1]
+
     def get_cache_server(self, url):
         """returns a cache server in which the cache is/will be stored
         raises KeyError if url is not found @TODO how to handle this?
@@ -77,7 +80,7 @@ class HashRing:
         new_interval = int(np.ceil(self._max_digest_val / np.power(2, new_n)))
         
         for i in range(self._interval, self._max_digest_val, self._interval):
-            for j in range(i, i+self_interval, new_interval):
+            for j in range(i, i+self._interval, new_interval):
                 self._buckets.append(j)
         
         self._interval = new_interval
@@ -87,9 +90,14 @@ class HashRing:
         """
         random.shuffle(cache_servers)
         random.shuffle(self._buckets)
-        for i in range(len(cache_servers)):
+        for i in range(len(self._buckets)):
+            if i >= len(cache_servers):
+                break
+            try:
+                old_cache_server = self._cache_trees[self._get_clockwise_cache_server(self._buckets[i])]
+            except KeyError:
+                old_cache_server = dict()
             self._val_to_serv_url.insert(self._buckets[i], cache_servers[i])
-            old_cache_server = self._cache_trees[self._val_to_serv_url[self._buckets[i]]]
             new_cache_server = AVLTree()
             for hashed_url in old_cache_server.keys():
                 if hashed_url < self._buckets[i]:
@@ -107,13 +115,13 @@ class HashRing:
         """adds a cache server to hash ring
         """
         # use up all the buckets to add new cache servers
-        rem_cache_servers = self._add_servers_to_remaining_buckets()
+        rem_cache_servers = self._add_servers_to_remaining_buckets(cache_servers)
         
         if rem_cache_servers and not self._buckets:
             if DEBUG:
                 print("adding buckets")
             self._bisect_segments(len(rem_cache_servers))
-            rem_cache_servers = self._add_servers_to_remaining_buckets()
+            rem_cache_servers = self._add_servers_to_remaining_buckets(rem_cache_servers)
             if rem_cache_servers:
                 raise Error("something wrong")
 
@@ -136,11 +144,12 @@ class HashRing:
 class MD5HashRing(HashRing):
     def __init__(self, cache_servers):
         self._max_digest_val = 2 ** 128 - 1
-        self._hash_func = md5()
+        self._hash_func = md5
         super().__init__(cache_servers)
 
     def _hash_url(self, url):
-        self._hash_func.update(url.encode())
-        return int(self._hash_func.hexdigest(), 16) 
+        m = self._hash_func()
+        m.update(url.encode())
+        return int(m.hexdigest(), 16) 
 
         
