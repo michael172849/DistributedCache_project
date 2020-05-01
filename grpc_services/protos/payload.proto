@@ -10,7 +10,7 @@ message Request {
 message Response {
     enum StatusCode {
         OK = 0;
-        ERROR = 1;
+        NO_SUCH_KEY_ERROR = 1;
     }
     StatusCode status = 1;
     string request_url = 2;

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x13\x63\x61\x63he_service.proto\x1a\rpayload.proto2\x0e\n\x0c\x43\x61\x63heServiceb\x06proto3'
+  serialized_pb=b'\n\x13\x63\x61\x63he_service.proto\x1a\rpayload.proto2T\n\x0c\x43\x61\x63heService\x12!\n\nsetContent\x12\x08.Request\x1a\t.Response\x12!\n\ngetContent\x12\x08.Request\x1a\t.Responseb\x06proto3'
   ,
   dependencies=[payload__pb2.DESCRIPTOR,])
 
@@ -36,8 +36,26 @@ _CACHESERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   serialized_start=38,
-  serialized_end=52,
+  serialized_end=122,
   methods=[
+  _descriptor.MethodDescriptor(
+    name='setContent',
+    full_name='CacheService.setContent',
+    index=0,
+    containing_service=None,
+    input_type=payload__pb2._REQUEST,
+    output_type=payload__pb2._RESPONSE,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='getContent',
+    full_name='CacheService.getContent',
+    index=1,
+    containing_service=None,
+    input_type=payload__pb2._REQUEST,
+    output_type=payload__pb2._RESPONSE,
+    serialized_options=None,
+  ),
 ])
 _sym_db.RegisterServiceDescriptor(_CACHESERVICE)
 

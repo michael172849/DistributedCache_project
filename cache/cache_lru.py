@@ -1,3 +1,4 @@
+import constant
 class LRUCache:
     def __init__(self, MSize):
         self.size = MSize
@@ -21,7 +22,7 @@ class LRUCache:
             self.delete(self.next[self.head])
 
     def get(self, key):
-        if key not in self.cache: return -1
+        if key not in self.cache: return constant.NO_SUCH_KEY_ERROR
         val = self.cache[key]
         self.delete(key)
         self.append(key, val)

@@ -8,11 +8,15 @@ service MembershipManagement {
 
 
 message HeartBeat {
-    string address = 1;
-    string port    = 2;
+    string memoryUsage = 1;
+    string cpuUsage = 2;
 }
 
 message ResultMsg {
-    bool succeed = 1;
+    enum StatusCode {
+        SUCCEEDED = 0;
+        FAILED = 1;
+    }
+    StatusCode status = 1;
     string msg   = 2;
 }

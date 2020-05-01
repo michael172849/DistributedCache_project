@@ -18,10 +18,32 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x10membership.proto\"*\n\tHeartBeat\x12\x0f\n\x07\x61\x64\x64ress\x18\x01 \x01(\t\x12\x0c\n\x04port\x18\x02 \x01(\t\")\n\tResultMsg\x12\x0f\n\x07succeed\x18\x01 \x01(\x08\x12\x0b\n\x03msg\x18\x02 \x01(\t2A\n\x14MembershipManagement\x12)\n\rSendHeartBeat\x12\n.HeartBeat\x1a\n.ResultMsg\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x10membership.proto\"2\n\tHeartBeat\x12\x13\n\x0bmemoryUsage\x18\x01 \x01(\t\x12\x10\n\x08\x63puUsage\x18\x02 \x01(\t\"h\n\tResultMsg\x12%\n\x06status\x18\x01 \x01(\x0e\x32\x15.ResultMsg.StatusCode\x12\x0b\n\x03msg\x18\x02 \x01(\t\"\'\n\nStatusCode\x12\r\n\tSUCCEEDED\x10\x00\x12\n\n\x06\x46\x41ILED\x10\x01\x32\x41\n\x14MembershipManagement\x12)\n\rSendHeartBeat\x12\n.HeartBeat\x1a\n.ResultMsg\"\x00\x62\x06proto3'
 )
 
 
+
+_RESULTMSG_STATUSCODE = _descriptor.EnumDescriptor(
+  name='StatusCode',
+  full_name='ResultMsg.StatusCode',
+  filename=None,
+  file=DESCRIPTOR,
+  values=[
+    _descriptor.EnumValueDescriptor(
+      name='SUCCEEDED', index=0, number=0,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='FAILED', index=1, number=1,
+      serialized_options=None,
+      type=None),
+  ],
+  containing_type=None,
+  serialized_options=None,
+  serialized_start=137,
+  serialized_end=176,
+)
+_sym_db.RegisterEnumDescriptor(_RESULTMSG_STATUSCODE)
 
 
 _HEARTBEAT = _descriptor.Descriptor(
@@ -32,14 +54,14 @@ _HEARTBEAT = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='address', full_name='HeartBeat.address', index=0,
+      name='memoryUsage', full_name='HeartBeat.memoryUsage', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='port', full_name='HeartBeat.port', index=1,
+      name='cpuUsage', full_name='HeartBeat.cpuUsage', index=1,
       number=2, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -58,7 +80,7 @@ _HEARTBEAT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=20,
-  serialized_end=62,
+  serialized_end=70,
 )
 
 
@@ -70,9 +92,9 @@ _RESULTMSG = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='succeed', full_name='ResultMsg.succeed', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=False, default_value=False,
+      name='status', full_name='ResultMsg.status', index=0,
+      number=1, type=14, cpp_type=8, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -88,6 +110,7 @@ _RESULTMSG = _descriptor.Descriptor(
   ],
   nested_types=[],
   enum_types=[
+    _RESULTMSG_STATUSCODE,
   ],
   serialized_options=None,
   is_extendable=False,
@@ -95,10 +118,12 @@ _RESULTMSG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=64,
-  serialized_end=105,
+  serialized_start=72,
+  serialized_end=176,
 )
 
+_RESULTMSG.fields_by_name['status'].enum_type = _RESULTMSG_STATUSCODE
+_RESULTMSG_STATUSCODE.containing_type = _RESULTMSG
 DESCRIPTOR.message_types_by_name['HeartBeat'] = _HEARTBEAT
 DESCRIPTOR.message_types_by_name['ResultMsg'] = _RESULTMSG
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -125,8 +150,8 @@ _MEMBERSHIPMANAGEMENT = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=107,
-  serialized_end=172,
+  serialized_start=178,
+  serialized_end=243,
   methods=[
   _descriptor.MethodDescriptor(
     name='SendHeartBeat',
