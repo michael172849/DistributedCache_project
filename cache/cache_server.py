@@ -14,20 +14,14 @@ from content.content_manager import ContentManager
 from cache.cache_lru import LRUCache
 
 import constant
+from cache.cache_membership import CacheMembership
 
 SERVER_ID = 3
-
-def simple_send_heartbeat():
-    with grpc.insecure_channel(constant.PROJECT_DOMAIN + constant.HEARTBEAT_PORT) as channel:
-        stub = membership_pb2_grpc.MembershipManagementStub(channel)
-        print("-------------- Send HeartBeat --------------")
-        heartBeat = membership_pb2.HeartBeat(address="123", port="123")
-        resMsg = stub.SendHeartBeat(heartBeat)
-        print(resMsg)
 
 class CacheServer(cache_service_pb2_grpc.CacheServiceServicer):
     def __init__(self):
         super().__init__()
+        self.cache_membership_manager = CacheMembership()
         self.mContentManager = ContentManager()
         self.mCache = LRUCache(constant.CACHE_SIZE)
 
@@ -59,20 +53,24 @@ class CacheServer(cache_service_pb2_grpc.CacheServiceServicer):
         return resp
 
 
-def startCacheServer():
-    # simple_send_heartbeat()
+    def startCacheServer(self):
 
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    cache_service_pb2_grpc.add_CacheServiceServicer_to_server(CacheServer(), server)
+        # start cache side membership manager thread to send heartbeat to master...
+        self.cache_membership_manager.start_membership_thread()
 
-    server.add_insecure_port(constant.PROJECT_DOMAIN + (str)(constant.CACHE_SERVICE_PORT_START + SERVER_ID))
-    
-    logging.debug("-----------------Start Cache Server %d--------------" % (SERVER_ID))
-    server.start()
-    server.wait_for_termination()
+        # start content server
+        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+        cache_service_pb2_grpc.add_CacheServiceServicer_to_server(CacheServer(), server)
+
+        server.add_insecure_port(constant.PROJECT_DOMAIN + (str)(constant.CACHE_SERVICE_PORT_START + SERVER_ID))
+        
+        logging.debug("-----------------Start Cache Server %d--------------" % (SERVER_ID))
+        server.start()
+        server.wait_for_termination()
 
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
-    startCacheServer()
+    cacheServer = CacheServer()
+    cacheServer.startCacheServer()

@@ -5,3 +5,5 @@ grpcio-tools>=1.28.1
 protobuf>=3.11.3
 six>=1.14.0
 wheel>=0.29
+psutil>=5.5.0
+flask>=1.1.2
