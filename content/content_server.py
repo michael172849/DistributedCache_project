@@ -16,13 +16,12 @@ class ContentServer(content_service_pb2_grpc.ContentServiceServicer):
         super().__init__()
         self.contentStore = {}
 
-    def setContent(self, request_iterator, context):
+    def setContent(self, request, context):
         # get value from the requests
-        for request in request_iterator:
-            logging.debug("Content Server set content for client (%d) for url %s" % 
-            (request.client_id, request.request_url))
-            # append value in case it is too long
-            self.contentStore[request.request_url] = request.data
+        logging.debug("Content Server set content for client ({0}) for url {1}".format(
+            request.client_id, request.request_url))
+        # append value in case it is too long
+        self.contentStore[request.request_url] = request.data
 
         # make response
         response = payload_pb2.Response (
@@ -31,11 +30,11 @@ class ContentServer(content_service_pb2_grpc.ContentServiceServicer):
         return response
 
     def getContent(self, request, context):
-        logging.debug("Content Server get content for client (%d) for url %s" % 
-            (request.client_id, request.request_url))
+        logging.debug("Content Server get content for client ({0}) for url {1}".format(
+            request.client_id, request.request_url))
         key = request.request_url
         if (key in self.contentStore):
-            value = self.contentStore[value]
+            value = self.contentStore[key]
             response = payload_pb2.Response(
                 status = payload_pb2.Response.StatusCode.OK,
                 request_url = key,

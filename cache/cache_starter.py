@@ -9,6 +9,7 @@ from cache.cache_server import startCacheServer
 
 m_servers = []
 def startCacheServers(server_num):
+    print('Start {0} cache servers'.format(server_num))
     for i in range(server_num):
         m_servers.append(multiprocessing.Process(
             target=startCacheServer,

@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x15\x63ontent_service.proto\x1a\rpayload.proto2X\n\x0e\x43ontentService\x12#\n\nsetContent\x12\x08.Request\x1a\t.Response(\x01\x12!\n\ngetContent\x12\x08.Request\x1a\t.Responseb\x06proto3'
+  serialized_pb=b'\n\x15\x63ontent_service.proto\x1a\rpayload.proto2V\n\x0e\x43ontentService\x12!\n\nsetContent\x12\x08.Request\x1a\t.Response\x12!\n\ngetContent\x12\x08.Request\x1a\t.Responseb\x06proto3'
   ,
   dependencies=[payload__pb2.DESCRIPTOR,])
 
@@ -36,7 +36,7 @@ _CONTENTSERVICE = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   serialized_start=40,
-  serialized_end=128,
+  serialized_end=126,
   methods=[
   _descriptor.MethodDescriptor(
     name='setContent',

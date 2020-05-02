@@ -3,3 +3,48 @@ DEBUG:root:-----------------Start Cache Server 0--------------
 DEBUG:cache.cache_membership:-------------- Send HeartBeat --------------
 DEBUG:root:-----------------Start Cache Server 0--------------
 DEBUG:root:-----------------Start Cache Server 0--------------
+DEBUG:root:-----------------Start Cache Server 0--------------
+DEBUG:root:-----------------Start Cache Server 0--------------
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server invalidate for client (0) for url test
+DEBUG:root:-----------------Start Cache Server 0--------------
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server invalidate for client (0) for url test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server invalidate for client (0) for url test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server invalidate for client (0) for url test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:-----------------Start Cache Server 0--------------
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server invalidate for client (0) for url test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server set content for client (0) for url test
+DEBUG:root:-----------------Start Cache Server 0--------------
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server invalidate for client (0) for url test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache miss for key = test
+DEBUG:root:Cache Server set content for client (0) for url test
+DEBUG:root:Cache Server get content for client 0 for url test
+DEBUG:root:cache hit for key = test

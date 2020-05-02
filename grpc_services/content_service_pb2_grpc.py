@@ -13,7 +13,7 @@ class ContentServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.setContent = channel.stream_unary(
+        self.setContent = channel.unary_unary(
                 '/ContentService/setContent',
                 request_serializer=payload__pb2.Request.SerializeToString,
                 response_deserializer=payload__pb2.Response.FromString,
@@ -28,7 +28,7 @@ class ContentServiceStub(object):
 class ContentServiceServicer(object):
     """Missing associated documentation comment in .proto file"""
 
-    def setContent(self, request_iterator, context):
+    def setContent(self, request, context):
         """Missing associated documentation comment in .proto file"""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -43,7 +43,7 @@ class ContentServiceServicer(object):
 
 def add_ContentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'setContent': grpc.stream_unary_rpc_method_handler(
+            'setContent': grpc.unary_unary_rpc_method_handler(
                     servicer.setContent,
                     request_deserializer=payload__pb2.Request.FromString,
                     response_serializer=payload__pb2.Response.SerializeToString,
@@ -64,7 +64,7 @@ class ContentService(object):
     """Missing associated documentation comment in .proto file"""
 
     @staticmethod
-    def setContent(request_iterator,
+    def setContent(request,
             target,
             options=(),
             channel_credentials=None,
@@ -73,7 +73,7 @@ class ContentService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_unary(request_iterator, target, '/ContentService/setContent',
+        return grpc.experimental.unary_unary(request, target, '/ContentService/setContent',
             payload__pb2.Request.SerializeToString,
             payload__pb2.Response.FromString,
             options, channel_credentials,

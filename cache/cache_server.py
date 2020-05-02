@@ -61,14 +61,22 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         return response
 
     def invalidate(self, request, content):
-        pass
+        key = request.request_url
+        logging.debug("Cache Server invalidate for client ({0}) for url {1}".format (
+            request.client_id, key))
+        #TODO: add cache invalidate
+        response = payload_pb2.Response(
+            status = payload_pb2.Response.StatusCode.OK,
+            request_url = key,
+        )
+        return response  
 
 def startCacheServer(server_id):
     logging.basicConfig(filename='log/cache_log_{0}'.format(server_id), level=logging.DEBUG)
 
     # start cache side membership manager thread to send heartbeat to master...
     cacheServer = LookasideCache(server_id)
-    cacheServer.cache_membership_manager.start_membership_thread()
+    # cacheServer.cache_membership_manager.start_membership_thread()
 
     # start content server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
