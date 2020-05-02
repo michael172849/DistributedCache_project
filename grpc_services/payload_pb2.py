@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\rpayload.proto\"?\n\x07Request\x12\x11\n\tclient_id\x18\x01 \x01(\x03\x12\x13\n\x0brequest_url\x18\x02 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x03 \x01(\t\"\x80\x01\n\x08Response\x12$\n\x06status\x18\x01 \x01(\x0e\x32\x14.Response.StatusCode\x12\x13\n\x0brequest_url\x18\x02 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x03 \x01(\t\"+\n\nStatusCode\x12\x06\n\x02OK\x10\x00\x12\x15\n\x11NO_SUCH_KEY_ERROR\x10\x01\x62\x06proto3'
+  serialized_pb=b'\n\rpayload.proto\"?\n\x07Request\x12\x11\n\tclient_id\x18\x01 \x01(\x03\x12\x13\n\x0brequest_url\x18\x02 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x03 \x01(\t\"\x9f\x01\n\x08Response\x12$\n\x06status\x18\x01 \x01(\x0e\x32\x14.Response.StatusCode\x12\x13\n\x0brequest_url\x18\x02 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x03 \x01(\t\"J\n\nStatusCode\x12\x06\n\x02OK\x10\x00\x12\x15\n\x11NO_SUCH_KEY_ERROR\x10\x01\x12\x0e\n\nCACHE_MISS\x10\x02\x12\r\n\tCACHE_HIT\x10\x03\x62\x06proto3'
 )
 
 
@@ -37,11 +37,19 @@ _RESPONSE_STATUSCODE = _descriptor.EnumDescriptor(
       name='NO_SUCH_KEY_ERROR', index=1, number=1,
       serialized_options=None,
       type=None),
+    _descriptor.EnumValueDescriptor(
+      name='CACHE_MISS', index=2, number=2,
+      serialized_options=None,
+      type=None),
+    _descriptor.EnumValueDescriptor(
+      name='CACHE_HIT', index=3, number=3,
+      serialized_options=None,
+      type=None),
   ],
   containing_type=None,
   serialized_options=None,
   serialized_start=168,
-  serialized_end=211,
+  serialized_end=242,
 )
 _sym_db.RegisterEnumDescriptor(_RESPONSE_STATUSCODE)
 
@@ -133,7 +141,7 @@ _RESPONSE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=83,
-  serialized_end=211,
+  serialized_end=242,
 )
 
 _RESPONSE.fields_by_name['status'].enum_type = _RESPONSE_STATUSCODE
