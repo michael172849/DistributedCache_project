@@ -28,7 +28,6 @@ class HeartBeatThread(threading.Thread):
             time.sleep(5)
 
 class CacheMembership():
-    
     def start_membership_thread(self):
         with grpc.insecure_channel(constant.PROJECT_DOMAIN + constant.HEARTBEAT_PORT) as channel:
             stub = membership_pb2_grpc.MembershipManagementStub(channel)

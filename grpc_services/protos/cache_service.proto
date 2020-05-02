@@ -2,6 +2,8 @@ syntax = "proto3";
 import "payload.proto";
 
 service CacheService {
+
     rpc setContent (Request) returns (Response);
     rpc getContent (Request) returns (Response);
+    rpc invalidate (Request) returns (Response);
 }
