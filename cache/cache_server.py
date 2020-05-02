@@ -64,6 +64,7 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         key = request.request_url
         logging.debug("Cache Server invalidate for client ({0}) for url {1}".format (
             request.client_id, key))
+        self.mCache.delete(key)
         #TODO: add cache invalidate
         response = payload_pb2.Response(
             status = payload_pb2.Response.StatusCode.OK,

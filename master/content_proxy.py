@@ -26,8 +26,7 @@ class ContentProxy():
             str(constant.CACHE_SERVICE_PORT_START + cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.invalidate(request)
-            return resp.status
-            
+            return resp.status        
         
     def setContent(self, key, value, cache_server_id):
         self.invalidate(key, cache_server_id)
