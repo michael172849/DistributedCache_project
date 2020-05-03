@@ -25,7 +25,7 @@ class ContentProxy():
         with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.invalidate(request)
-            return resp.status        
+            return resp.status 
         
     def setContent(self, key, value, cache_server_id):
         logging.debug('send SetRequest to content server for the key {0}'.format(key))

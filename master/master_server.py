@@ -34,7 +34,7 @@ class MasterServer():
 
     def get_content(self, key):
         cache_server_id = self.hashring._get_clockwise_cache_server(key)
-        return self.content_proxy.getContent(key, cache_server_id)
+        return self.content_proxy.getContent(key, int(cache_server_id))
 
 MASTERSERVER = MasterServer()
 
@@ -51,12 +51,18 @@ async def set_value(request):
     response_obj = {'status': re}
     return web.Response(text=json.dumps(response_obj)) 
 
+async def get_value(request):
+    key = request.query['key']
+    re = MASTERSERVER.get_content(key)
+    response_obj = {'status': re}
+    return web.Response(text=json.dumps(response_obj)) 
 
 def run():
     MASTERSERVER.start_server()
     app = web.Application()
     app.router.add_get('/', handle)
     app.router.add_post('/kv', set_value)
+    app.router.add_get('/kv', get_value)
     web.run_app(app)
 
 if __name__ == "__main__":

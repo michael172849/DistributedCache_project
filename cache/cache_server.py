@@ -1,4 +1,5 @@
 import logging
+import time
 import os
 import sys
 from concurrent import futures
@@ -26,6 +27,7 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         self.mContentManager = ContentManager()
         self.mCache = LRUCache(constant.CACHE_SIZE)
         self.serverId = server_id
+        self.token_granted = {}
 
     def getContent(self, request, context):
         logging.debug("Cache Server get content for client {0} for url {1}".format (
@@ -35,9 +37,14 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         response = None
         if (value == constant.NO_SUCH_KEY_ERROR):
             logging.debug("cache miss for key = {0}".format(key))
+            # check if this key has been granted with token within the time threshold
+            lease = -1
+            if key not in self.token_granted or (time.time() - self.token_granted[key]["time"] > constant.CACHE_TOKEN_RATE_LIMITER):
+                lease = int(time.time())
             response = payload_pb2.Response(
                 status = payload_pb2.Response.StatusCode.CACHE_MISS,
                 request_url = key,
+            #    lease = lease,
             )
         else:
             logging.debug("cache hit for key = {0}".format(key))
