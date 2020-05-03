@@ -22,8 +22,7 @@ class ContentProxy():
     def invalidate(self, key, cache_server_id):
         request = payload_pb2.Request(client_id = self.serverId,
                                     request_url = key)
-        with grpc.insecure_channel(constant.PROJECT_DOMAIN + 
-            str(constant.CACHE_SERVICE_PORT_START + cache_server_id)) as channel:
+        with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.invalidate(request)
             return resp.status        
@@ -39,8 +38,7 @@ class ContentProxy():
     def setCacheContent(self, key, value, cache_server_id):
         request = payload_pb2.Request(client_id = self.serverId,
                             request_url = key, data = value)
-        with grpc.insecure_channel(constant.PROJECT_DOMAIN + 
-            str(constant.CACHE_SERVICE_PORT_START + cache_server_id)) as channel:
+        with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.setContent(request)
             return resp.status
@@ -49,8 +47,7 @@ class ContentProxy():
         getRequest = payload_pb2.Request(client_id = self.serverId,
                                         request_url = key)
         resp = None
-        with grpc.insecure_channel(constant.PROJECT_DOMAIN + 
-            str(constant.CACHE_SERVICE_PORT_START + cache_server_id)) as channel:
+        with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.getContent(getRequest)
 

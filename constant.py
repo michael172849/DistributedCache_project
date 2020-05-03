@@ -19,4 +19,7 @@ CACHE_SERVER_COUNT = 3
 
 STATUS_CODE = payload_pb2.Response.StatusCode
 
+def getCacheServerAddr(cache_server_id):
+    return PROJECT_DOMAIN + str(CACHE_SERVICE_PORT_START + cache_server_id)
+
 
