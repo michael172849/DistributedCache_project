@@ -11,6 +11,7 @@ class LRUCache:
         self.next[a], self.before[b] = b, a
 
     def delete(self, key):
+        if key not in self.cache: return constant.NO_SUCH_KEY_ERROR
         self.connect(self.before[key], self.next[key])
         del self.before[key], self.next[key], self.cache[key]
 
