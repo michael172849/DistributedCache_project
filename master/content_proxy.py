@@ -1,9 +1,9 @@
 import logging
-import os
-import sys
+import os, sys
 from concurrent import futures
-
+import time
 import grpc
+import threading
 
 sys.path.append(os.path.abspath("."))
 from grpc_services import cache_service_pb2_grpc
@@ -37,10 +37,10 @@ class ContentProxy():
         self.invalidate(key, cache_server_id)
         return resp.status
 
-    def setCacheContent(self, key, value, cache_server_id):
+    def setCacheContent(self, key, value, cache_server_id, lease):
         request = payload_pb2.Request(client_id = self.serverId,
-                            request_url = key, data = value)
-        logging.debug('set content to cache server {0} for key {1} value {2}'.format(cache_server_id, key, value))
+                            request_url = key, data = value, lease = lease)
+        logging.debug('set content to cache server {0} for key {1} value {2} lease {3}'.format(cache_server_id, key, value, lease))
         with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.setContent(request)
@@ -62,10 +62,22 @@ class ContentProxy():
 
         if resp.status == payload_pb2.Response.StatusCode.CACHE_MISS:
             logging.debug('getting cache miss for key {0} fetching from content server'.format(key))
+            # check if it is granted with the lease
+            lease = resp.lease
+            if lease == -1:
+                logging.info("didn't get the lease, wait for a few seconds and retry")
+                # wait a few seconds and then send the request again
+                time.sleep(constant.MASTER_NO_LEASE_RETRY_TIME)
+                return self.getContet(key, cache_server_id)
+                # it does not get the lease, so wait for a few minutes and then resend the request to cache
+            
+            # it has a lease, so let's get content with work
             content = self.contentServer.getContent(getRequest)
             if content.status == payload_pb2.Response.StatusCode.OK:
                 logging.debug('getting content from content server for key {0}'.format(key))
-                self.setCacheContent(key, content.data, cache_server_id)
+                # start a new thread to set cache
+                set_cache_thread = threading.Thread(target=self.setCacheContent, args=(key, content.data, cache_server_id, lease, ))
+                set_cache_thread.start()
                 return resp.status, content.data
             elif content.status == payload_pb2.Response.StatusCode.NO_SUCH_KEY_ERROR:
                 logging.debug('no such key from content server for key {0}'.format(key))
