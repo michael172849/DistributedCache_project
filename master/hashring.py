@@ -22,6 +22,7 @@ class HashRing:
         # args:
                cache_servers: list of urls for cache servers
         """
+        logger.info("INIT HASHRING")
         # Tree that maps buckets to cache servers. Represents the whole hashring.
         self._val_to_serv_url = AVLTree()  
 
@@ -184,6 +185,7 @@ class HashRing:
                 raise Exception("Servers not allocated: " + ' '.join(rem_cache_servers))
 
     def remove_cache_server(self, server_url):
+        logger.info("removed cache_server {0}".format(server_url))
         if not self._val_to_serv_url:
             return
         for val, url in self._val_to_serv_url.items():
