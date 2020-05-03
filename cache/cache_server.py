@@ -39,7 +39,7 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
             logging.debug("cache miss for key = {0}".format(key))
             # check if this key has been granted with token within the time threshold
             lease = -1
-            if key not in self.token_granted or (time.time() - self.token_granted[key]["time"] > constant.CACHE_TOKEN_RATE_LIMITER):
+            if key not in self.token_granted.keys() or (time.time() - self.token_granted[key]["time"] > constant.CACHE_TOKEN_RATE_LIMITER):
                 lease = int(time.time())
                 # store the lease
                 self.token_granted[key] = lease
@@ -63,7 +63,7 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
             request.client_id, request.request_url, request.lease))
         key = request.request_url
         value = request.data
-        if key in self.token_granted and self.token_granted[key] == request.lease:
+        if key in self.token_granted.keys() and self.token_granted[key] == request.lease:
             # this is valid
             self.mCache.put(key, value)
             self.token_granted.pop(key)

@@ -27,14 +27,13 @@ class MasterServer():
     def set_content(self, key, value):
         # get cache server id based on key
         cache_server_id = self.hashring._get_clockwise_cache_server(key)
-        print("type: {0}, val: {1}".format(type(cache_server_id), cache_server_id))
         logging.info("cache server id: {0} for key {1}".format(cache_server_id, key))
         logging.info(self.hashring._val_to_serv_url)
-        self.content_proxy.setContent(key, value, int(cache_server_id))
+        return self.content_proxy.setContent(key, value, cache_server_id)
 
     def get_content(self, key):
         cache_server_id = self.hashring._get_clockwise_cache_server(key)
-        return self.content_proxy.getContent(key, int(cache_server_id))
+        return self.content_proxy.getContent(key, cache_server_id)
 
 MASTERSERVER = MasterServer()
 

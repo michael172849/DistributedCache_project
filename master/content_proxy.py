@@ -32,9 +32,19 @@ class ContentProxy():
         setRequest = payload_pb2.Request(client_id = self.serverId,
                                         request_url = key,
                                         data = value)
-        resp = self.contentServer.setContent(setRequest)
+        try:
+            resp = self.contentServer.setContent(setRequest)
+        except:
+            logging.error("not able to communicate to content server")
+            return constant.CONNECTION_CONTENT_SERVER_FAILED
+
         logging.debug('invalidating the key {0}'.format(key))
-        self.invalidate(key, cache_server_id)
+
+        if cache_server_id == "ERROR":
+            logging.error("No cache server found....., not invalidate the cache")
+        else:
+            logging.info("invalidate key {0} for cacheserver {1}".format(key, cache_server_id))
+            self.invalidate(key, int(cache_server_id))
         return resp.status
 
     def setCacheContent(self, key, value, cache_server_id, lease):
@@ -46,15 +56,49 @@ class ContentProxy():
             resp = stub.setContent(request)
             return resp.status
 
+    def getContentFromContentServer(self, getRequest):
+        # ignore cache server, get the content directly from content server
+        try:
+            content = self.contentServer.getContent(getRequest)
+        except:
+            logging.error("not able to communicate to content server")
+            return constant.CONNECTION_CONTENT_SERVER_FAILED, None
+
+        if content.status == payload_pb2.Response.StatusCode.OK:
+            logging.debug('getting content from content server for key {0}'.format(getRequest.request_url))
+            return content.status, content.data
+        elif content.status == payload_pb2.Response.StatusCode.NO_SUCH_KEY_ERROR:
+            logging.debug('no such key from content server for key {0}'.format(getRequest.request_url))
+            return content.status, None
+
+
     def getContent(self, key, cache_server_id):
         getRequest = payload_pb2.Request(client_id = self.serverId,
                                         request_url = key)
         resp = None
-        logging.debug('getting key {0} from cache server {1}'.format(key, cache_server_id))
-        logging.debug(constant.getCacheServerAddr(cache_server_id))
-        with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
-            stub = cache_service_pb2_grpc.CacheServiceStub(channel)
-            resp = stub.getContent(getRequest)
+        # cannot find a corresponding cache server
+        if cache_server_id == "ERROR":
+            logging.error("No cache server available found for key {0}....., get data from content server directly".format(key))
+            status, content = self.getContentFromContentServer(getRequest)
+            if status == payload_pb2.Response.StatusCode.OK:
+                return constant.NO_AVAILABLE_CACHE_SERVER, content
+            else:
+                return status, content
+
+        cache_server_id = int(cache_server_id)
+        logging.debug('getting key {0} from cache server {1}, server: {2}'.format(key, cache_server_id, constant.getCacheServerAddr(cache_server_id)))
+        # if the fetch from cache server failed... go to content server directly
+        try:
+            with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
+                stub = cache_service_pb2_grpc.CacheServiceStub(channel)
+                resp = stub.getContent(getRequest)
+        except:
+            logging.error("getting key {0} from cache server {1} failed.".format(key, cache_server_id))
+            status, content = self.getContentFromContentServer(getRequest)
+            if status == payload_pb2.Response.StatusCode.OK:
+                return constant.CONNECTION_CACHE_SERVER_FAILED, content
+            else:
+                return status, content
 
         if resp.status == payload_pb2.Response.StatusCode.CACHE_HIT:
             logging.debug('getting cache hit for key {0}'.format(key))
@@ -72,16 +116,14 @@ class ContentProxy():
                 # it does not get the lease, so wait for a few minutes and then resend the request to cache
             
             # it has a lease, so let's get content with work
-            content = self.contentServer.getContent(getRequest)
-            if content.status == payload_pb2.Response.StatusCode.OK:
-                logging.debug('getting content from content server for key {0}'.format(key))
+            status, data = self.getContentFromContentServer(getRequest)
+            if status == payload_pb2.Response.StatusCode.OK:
                 # start a new thread to set cache
-                set_cache_thread = threading.Thread(target=self.setCacheContent, args=(key, content.data, cache_server_id, lease, ))
+                set_cache_thread = threading.Thread(target=self.setCacheContent, args=(key, data, cache_server_id, lease, ))
                 set_cache_thread.start()
-                return resp.status, content.data
-            elif content.status == payload_pb2.Response.StatusCode.NO_SUCH_KEY_ERROR:
-                logging.debug('no such key from content server for key {0}'.format(key))
-                return content.status
+                return resp.status, data
+            else: 
+                return status
         return resp.status
 
 
