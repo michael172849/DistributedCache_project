@@ -184,7 +184,7 @@ class HashRing:
                 del self._val_to_serv_url[val]
         # @TODO callback to invalidate all the cache
         old_cache_server = self._cache_trees[server_url]
-        self._cache_trees[self._get_clockwise_cache_server(server_url)].update(old_cache_server)
+        self._cache_trees[self._val_to_serv_url[self._get_clockwise_cache_server_value(val+1)]].update(old_cache_server)
         # @TODO callback to send the cache to new cache server
         del self._cache_trees[server_url]
     
@@ -215,4 +215,5 @@ class MD5HashRing(HashRing):
         m.update(url.encode())
         return int(m.hexdigest(), 16) 
 
+# class DuplicateHashRing(HashRing):
 
