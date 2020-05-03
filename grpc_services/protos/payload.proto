@@ -5,6 +5,7 @@ message Request {
     int64 client_id = 1;
     string request_url = 2;
     string data = 3;    // This field is optional for getContent
+    int64  lease = 4;
 }
 
 message Response {
@@ -13,6 +14,7 @@ message Response {
         NO_SUCH_KEY_ERROR = 1;
         CACHE_MISS = 2;
         CACHE_HIT = 3;
+        FAILED = 4;
     }
     StatusCode status = 1;
     string request_url = 2;

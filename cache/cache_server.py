@@ -41,10 +41,13 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
             lease = -1
             if key not in self.token_granted or (time.time() - self.token_granted[key]["time"] > constant.CACHE_TOKEN_RATE_LIMITER):
                 lease = int(time.time())
+                # store the lease
+                self.token_granted[key] = lease
+
             response = payload_pb2.Response(
                 status = payload_pb2.Response.StatusCode.CACHE_MISS,
                 request_url = key,
-            #    lease = lease,
+                lease = lease,
             )
         else:
             logging.debug("cache hit for key = {0}".format(key))
@@ -56,15 +59,24 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         return response
 
     def setContent(self, request, context):
-        logging.debug("Cache Server set content for client ({0}) for url {1}".format (
-            request.client_id, request.request_url))
+        logging.debug("Cache Server set content for client ({0}) for url {1}, lease {2}".format (
+            request.client_id, request.request_url, request.lease))
         key = request.request_url
         value = request.data
-        self.mCache.put(key, value)
-        response = payload_pb2.Response(
-            status = payload_pb2.Response.StatusCode.OK,
-            request_url = key,
-        )
+        if key in self.token_granted and self.token_granted[key] == request.lease:
+            # this is valid
+            self.mCache.put(key, value)
+            self.token_granted.pop(key)
+            response = payload_pb2.Response(
+                status = payload_pb2.Response.StatusCode.OK,
+                request_url = key,
+            )
+        else:
+            # not valid token... return with failed
+            response = payload_pb2.Response(
+                status = payload_pb2.Response.StatusCode.FAILED,
+                request_url = key,
+            )
         return response
 
     def invalidate(self, request, context):
@@ -73,6 +85,12 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
             request.client_id, key))
         self.mCache.delete(key)
         #TODO: add cache invalidate
+
+        # invalidate token
+        try:
+            self.token_granted.pop(key)
+        except:
+            logging.debug("Not found token")
         response = payload_pb2.Response(
             status = payload_pb2.Response.StatusCode.OK,
             request_url = key,
@@ -80,11 +98,10 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         return response  
 
 def startCacheServer(server_id):
-    logging.basicConfig(filename='log/cache_log_{0}'.format(server_id), level=logging.DEBUG)
+    logging.basicConfig(filename='log/cache_log_{0}'.format(server_id), filemode='w', level=logging.DEBUG)
 
     # start cache side membership manager thread to send heartbeat to master...
     cacheServer = LookasideCache(server_id)
-    cacheServer.cache_membership_manager.start_membership_thread()
 
     # start cache server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
@@ -95,6 +112,7 @@ def startCacheServer(server_id):
     
     logging.debug("-----------------Start Cache Server {0} on address {1}--------------".format(server_id, address))
     server.start()
+    cacheServer.cache_membership_manager.start_membership_thread()
     server.wait_for_termination()
 
 
