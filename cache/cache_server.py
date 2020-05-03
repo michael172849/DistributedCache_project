@@ -83,7 +83,7 @@ def startCacheServer(server_id):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     cache_service_pb2_grpc.add_CacheServiceServicer_to_server(cacheServer, server)
 
-    server.add_insecure_port(constant.PROJECT_DOMAIN + (str)(constant.CACHE_SERVICE_PORT_START + server_id))
+    server.add_insecure_port(constant.getCacheServerAddr(server_id))
     
     logging.debug("-----------------Start Cache Server {0}--------------".format(server_id))
     server.start()

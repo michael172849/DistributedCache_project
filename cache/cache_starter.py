@@ -28,7 +28,7 @@ def stopCacheServers():
 if __name__ == '__main__':
     while True:
         cmd = input()
-        if 'start ' in cmd:
+        if 'startAll' in cmd:
             num = cmd.split()[1]
             startCacheServers(int(num))
         elif cmd == 'stop':
