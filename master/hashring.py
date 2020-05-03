@@ -3,9 +3,10 @@ from hashlib import md5
 from numpy import log2
 import numpy as np
 import random
+import copy
 # maps URI to the cache server id
 # implements https://www.cs.princeton.edu/courses/archive/fall07/cos518/papers/chash.pdf
-DEBUG = True
+DEBUG = False
 
 # for testing
 if DEBUG:
@@ -55,8 +56,8 @@ class HashRing:
     def _get_cache_server_url(self, url):
         return self._get_clockwise_url(self._val_to_serv_url, self._hash_url(url))
 
-    def _get_clockwise_cache_server(self, val):
-        return self._get_clockwise_url(self._val_to_serv_url, val)
+    def _get_clockwise_cache_server(self, url):
+        return self._get_clockwise_url(self._val_to_serv_url, self._hash_url(url))
 
     def _get_clockwise_cache_server_value(self, val):
         return self._get_clockwise_value(self._val_to_serv_url, val)
@@ -90,19 +91,33 @@ class HashRing:
 
         rem_buckets = self._buckets[i+1:]
         rem_cache_servers = cache_servers[i+1:]
-        
-        # migrate caches
-        for k in new_mappings.keys():
+
+        for old_bucket_val in self._val_to_serv_url.keys():
             try:
-                old_cache_server = self._cache_trees[self._get_clockwise_cache_server(k)]
+                old_cache_server = self._cache_trees[self._val_to_serv_url[old_bucket_val]]
+                old_cache_server_copy = copy.deepcopy(self._cache_trees[self._val_to_serv_url[old_bucket_val]])
             except KeyError:
                 continue
-            for hashed_url in old_cache_server.keys():
-                clockwise_val_to_new_bucket = k - hashed_url
-                if clockwise_val_to_new_bucket > -1 and  clockwise_val_to_new_bucket < self._get_clockwise_cache_server_value(hashed_url):
-                    print(str(clockwise_val_to_new_bucket) + ":migrating " + old_cache_server[hashed_url])
+            for hashed_url in old_cache_server_copy.keys():
+                new_bucket_val = self._get_clockwise_value(new_mappings, hashed_url)
+                
+                clockwise_val_to_new_bucket = new_bucket_val - int(hashed_url)
+                if clockwise_val_to_new_bucket < 0:
+                    clockwise_val_to_new_bucket += self._max_digest_val + 1
+
+                clockwise_val_to_old_bucket = old_bucket_val - int(hashed_url)
+                if clockwise_val_to_old_bucket < 0:
+                    clockwise_val_to_old_bucket += self._max_digest_val + 1
+
+                # print("for item " + str(hashed_url))
+                # print("old server val " + str(old_bucket_val))
+                # print("new server val " + str(new_bucket_val))
+                # print("old: {} vs. new: {}".format(clockwise_val_to_old_bucket, clockwise_val_to_new_bucket))
+
+                if clockwise_val_to_new_bucket < clockwise_val_to_old_bucket:
+                    # print(str(clockwise_val_to_new_bucket) + ":migrating " + old_cache_server[hashed_url])
                     # @TODO callback to send cache to new server
-                    self._cache_trees[new_mappings[k]].insert(hashed_url, old_cache_server[hashed_url])
+                    self._cache_trees[new_mappings[new_bucket_val]].insert(hashed_url, old_cache_server[hashed_url])
                     # @TODO callback to invalidate old cache here
                     old_cache_server.remove(hashed_url)
 
@@ -112,8 +127,42 @@ class HashRing:
         self._buckets = rem_buckets
         return rem_cache_servers
 
+        # # migrate caches
+        # for k in new_mappings.keys():
+        #     try:
+        #         old_cache_server = self._cache_trees[self._get_clockwise_cache_server(k)]
+        #     except KeyError:
+        #         continue
+        #     for hashed_url in old_cache_server.keys():
+
+        #         clockwise_val_to_new_bucket = k - hashed_url
+        #         if clockwise_val_to_new_bucket < 0:
+        #             clockwise_val_to_new_bucket += self._max_digest_val + 1
+
+        #         clockwise_val_to_old_bucket = self._get_clockwise_cache_server_value(hashed_url) - hashed_url
+        #         if clockwise_val_to_old_bucket < 0:
+        #             clockwise_val_to_old_bucket += self._max_digest_val + 1
+                
+        #         print("for item " + str(hashed_url))
+        #         print("old server val " + str(self._get_clockwise_cache_server_value(hashed_url)))
+        #         print("new server val " + str(k))
+        #         print("old: {} vs. new: {}".format(clockwise_val_to_old_bucket, clockwise_val_to_new_bucket))
+
+        #         if clockwise_val_to_new_bucket < clockwise_val_to_old_bucket:
+        #             print(str(clockwise_val_to_new_bucket) + ":migrating " + old_cache_server[hashed_url])
+        #             # @TODO callback to send cache to new server
+        #             self._cache_trees[new_mappings[k]].insert(hashed_url, old_cache_server[hashed_url])
+        #             # @TODO callback to invalidate old cache here
+        #             old_cache_server.remove(hashed_url)
+
+        # for k in new_mappings.keys():
+        #     self._val_to_serv_url.insert(k, new_mappings[k])
+
+        # self._buckets = rem_buckets
+        # return rem_cache_servers
+
     def get_cache_server(self, url):
-        """returns a cache server in which the cache is/will be stored
+        """returns a cache server in which the cache is stored
         raises KeyError if url is not found @TODO how to handle this?
         """
         server_url = self._get_cache_server_url(url)
@@ -168,6 +217,16 @@ class HashRing:
         """
         raise NotImplementedError()
 
+class SimpleHashRing(HashRing):
+    def __init__(self, cache_servers):
+        self._max_digest_val = 2 ** 5 - 1
+        self._hash_func = md5
+        super().__init__(cache_servers)
+
+    def _hash_url(self, url):
+        m = self._hash_func()
+        m.update(url.encode())
+        return int(m.hexdigest(), 16) % self._max_digest_val
 
 class MD5HashRing(HashRing):
     def __init__(self, cache_servers):
@@ -180,4 +239,4 @@ class MD5HashRing(HashRing):
         m.update(url.encode())
         return int(m.hexdigest(), 16) 
 
-        
+
