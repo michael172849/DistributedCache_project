@@ -44,6 +44,10 @@ logging.basicConfig(level=logging.DEBUG)
 
 async def handle(request):
     response_obj = {'status': 'success'}
+    return web.Response(text=json.dumps(response_obj))
+
+async def analyze(request):
+    response_obj = {'status': 'success'}
     MASTERSERVER.printAnalytics('log/analytics.txt')
     return web.Response(text=json.dumps(response_obj))
 
@@ -71,6 +75,8 @@ def run():
     MASTERSERVER.start_server()
     app = web.Application()
     app.router.add_get('/', handle)
+    app.router.add_get('/analytics', analyze)
+
     app.router.add_post('/kv', set_value)
     app.router.add_get('/kv', get_value)
     web.run_app(app)

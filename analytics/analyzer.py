@@ -30,7 +30,10 @@ class Analyzer():
 
 
     def getPrintHitRate(self, step):
-        return 'The hit rate in step {0} is {1}\n'.format(
+        if self.hit_rate[step]['hit'] + self.hit_rate[step]['miss'] == 0:
+            return 'The hit rate in step {0} is inf \n'.format(step)
+        else:
+            return 'The hit rate in step {0} is {1} \n'.format(
                         step, self.hit_rate[step]['hit']/(self.hit_rate[step]['hit'] + self.hit_rate[step]['miss']))
 
     def getPrintLog(self, step):
