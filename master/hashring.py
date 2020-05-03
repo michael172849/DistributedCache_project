@@ -23,7 +23,10 @@ class HashRing:
         # Tree that maps buckets to cache servers. Represents the whole hashring.
         self._val_to_serv_url = AVLTree()  
 
-        self._n = int(np.ceil(log2(len(cache_servers))))
+        if len(cache_servers) == 0:
+            self._n = 0
+        else:
+            self._n = int(np.ceil(log2(len(cache_servers))))
 
         # divide the hash ring into 2^n intervals
         self._num_buckets = np.power(2, self._n)
@@ -36,7 +39,8 @@ class HashRing:
         self._cache_trees = dict([(serv, AVLTree()) for serv in cache_servers])
 
         # randomly allocate cache servers to buckets
-        self._add_servers_to_remaining_buckets(cache_servers)
+        if len(cache_servers) != 0:
+            self._add_servers_to_remaining_buckets(cache_servers)
 
         if DEBUG:
             print(self._val_to_serv_url)
@@ -127,40 +131,6 @@ class HashRing:
         self._buckets = rem_buckets
         return rem_cache_servers
 
-        # # migrate caches
-        # for k in new_mappings.keys():
-        #     try:
-        #         old_cache_server = self._cache_trees[self._get_clockwise_cache_server(k)]
-        #     except KeyError:
-        #         continue
-        #     for hashed_url in old_cache_server.keys():
-
-        #         clockwise_val_to_new_bucket = k - hashed_url
-        #         if clockwise_val_to_new_bucket < 0:
-        #             clockwise_val_to_new_bucket += self._max_digest_val + 1
-
-        #         clockwise_val_to_old_bucket = self._get_clockwise_cache_server_value(hashed_url) - hashed_url
-        #         if clockwise_val_to_old_bucket < 0:
-        #             clockwise_val_to_old_bucket += self._max_digest_val + 1
-                
-        #         print("for item " + str(hashed_url))
-        #         print("old server val " + str(self._get_clockwise_cache_server_value(hashed_url)))
-        #         print("new server val " + str(k))
-        #         print("old: {} vs. new: {}".format(clockwise_val_to_old_bucket, clockwise_val_to_new_bucket))
-
-        #         if clockwise_val_to_new_bucket < clockwise_val_to_old_bucket:
-        #             print(str(clockwise_val_to_new_bucket) + ":migrating " + old_cache_server[hashed_url])
-        #             # @TODO callback to send cache to new server
-        #             self._cache_trees[new_mappings[k]].insert(hashed_url, old_cache_server[hashed_url])
-        #             # @TODO callback to invalidate old cache here
-        #             old_cache_server.remove(hashed_url)
-
-        # for k in new_mappings.keys():
-        #     self._val_to_serv_url.insert(k, new_mappings[k])
-
-        # self._buckets = rem_buckets
-        # return rem_cache_servers
-
     def get_cache_server(self, url):
         """returns a cache server in which the cache is stored
         raises KeyError if url is not found @TODO how to handle this?
@@ -208,9 +178,9 @@ class HashRing:
                 del self._val_to_serv_url[val]
         # @TODO callback to invalidate all the cache
         old_cache_server = self._cache_trees[server_url]
-        self._cache_trees[self.get_cache_server(server_url)].update(old_cache_server)
+        self._cache_trees[self._get_clockwise_cache_server(server_url)].update(old_cache_server)
         # @TODO callback to send the cache to new cache server
-        del self.cache_trees[server_url]
+        del self._cache_trees[server_url]
     
     def _hash_url(self, url):
         """hashes a URL: preferrably return an integer
