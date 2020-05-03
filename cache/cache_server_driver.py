@@ -56,11 +56,21 @@ def cmdInterface():
         if 'startAll' in cmd:
             num = cmd.split()[1]
             driver.startCacheServers(int(num))
-        elif cmd == 'stopAll':
+        elif 'stopAll' in cmd:
             driver.stopAllCacheServers()
         elif 'startServer' in cmd:
             num = cmd.split()[1]
             driver.startCacheServer(int(num))
+        elif 'stopServer' in cmd:
+            num = cmd.split()[1]
+            driver.stopCacheServer(int(num))
+        else:
+            print('No such command! Available commands are:')
+            print('1. startAll x. \t \tstart x cache servers.')
+            print('2. startServer x. \t start one cache server with id x.')
+            print('3. stopAll. \t \t stop all running cache servers.')
+            print('4. stopServer x. \t stop one cache server with id x.')
+            print()
 
 if __name__ == '__main__':
     cmdInterface()
