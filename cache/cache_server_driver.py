@@ -24,8 +24,8 @@ class CacheServerDriver():
             self.mServers[p].start()
 
     def stopAllCacheServers(self):
-        for p in self.m_servers:
-            self.m_servers[p].terminate()
+        for p in self.mServers:
+            self.mServers[p].terminate()
         time.sleep(0.5)
         exit()
 
@@ -35,7 +35,7 @@ class CacheServerDriver():
             return
         self.mServers[server_num] = multiprocessing.Process(
             target=startCacheServer,
-            args=(server_num),
+            args=(server_num,),
             daemon=True,
         )
         self.mServers[server_num].start()
@@ -60,8 +60,8 @@ def cmdInterface():
             driver.stopAllCacheServers()
         elif 'startServer' in cmd:
             num = cmd.split()[1]
-            startCacheServer(int(num))
-            
+            driver.startCacheServer(int(num))
+
 if __name__ == '__main__':
     cmdInterface()
 
