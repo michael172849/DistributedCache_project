@@ -53,7 +53,7 @@ class Analyzer():
                     f.write(self.getPrintHitRate(i))
                 f.write('=======================Detail Log============================\n')
                 for i in range(self.curStep + 1):
-                    f.write('In step {0}'.format(i))
+                    f.write('In step {0}\n'.format(i))
                     f.write(self.getPrintLog(i))
         else:
             for i in range(self.curStep+1):
