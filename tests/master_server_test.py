@@ -9,8 +9,9 @@ class TestMasterServer(unittest.TestCase):
 
     def test_1_post(self):
         payload = {'key': 'test_key', 'value': 'test_val'}
+        data = {'key': 'test_key', 'value': 'test_val'}
         print("POST " + str(payload))
-        r = requests.post(self.kv_url, params=payload)
+        r = requests.post(self.kv_url, params=payload, data=data)
         print(r.url)
         print(r.text)
 

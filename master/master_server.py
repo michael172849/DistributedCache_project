@@ -45,8 +45,15 @@ async def handle(request):
     return web.Response(text=json.dumps(response_obj))
 
 async def set_value(request):
-    key = request.query['key'] 
-    value = request.query['value'] 
+    data = await request.post()
+    try:
+        key = data['key']
+        value = data['value']
+    except KeyError:
+        logging.error("missing key, value for POST")
+        response_obj = {'status': 'error'}
+        return web.Response(text=json.dumps(response_obj)) 
+
     re = MASTERSERVER.set_content(key, value)
     response_obj = {'status': re}
     return web.Response(text=json.dumps(response_obj)) 
