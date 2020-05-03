@@ -17,4 +17,5 @@ message Response {
     StatusCode status = 1;
     string request_url = 2;
     string data = 3;
+    int64 lease = 4;
 }
