@@ -28,7 +28,9 @@ class ContentProxy():
             return resp.status        
         
     def setContent(self, key, value, cache_server_id):
+        logging.debug('In ContentProxy, invalidating the key {0}'.format(key))
         self.invalidate(key, cache_server_id)
+        logging.debug('In ContentProxy, send SetRequest to content server for the key {0}'.format(key))
         setRequest = payload_pb2.Request(client_id = self.serverId,
                                         request_url = key,
                                         data = value)
@@ -38,6 +40,7 @@ class ContentProxy():
     def setCacheContent(self, key, value, cache_server_id):
         request = payload_pb2.Request(client_id = self.serverId,
                             request_url = key, data = value)
+        logging.debug('In ContentProxy, set content to cache server {0} for key {1} value {2}'.format(cache_server_id, key, value))
         with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.setContent(request)
@@ -47,21 +50,25 @@ class ContentProxy():
         getRequest = payload_pb2.Request(client_id = self.serverId,
                                         request_url = key)
         resp = None
+        logging.debug('In ContentPorxy, getting key {0} from cache server {1}'.format(key, cache_server_id))
         with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.getContent(getRequest)
 
         if resp.status == payload_pb2.Response.StatusCode.CACHE_HIT:
+            logging.debug('In ContentProxy, getting cache hit for key {0}'.format(key))
             return resp.status, resp.data
 
         if resp.status == payload_pb2.Response.StatusCode.CACHE_MISS:
+            logging.debug('In ContentProxy, getting cache miss for key {0} fetching from content server'.format(key))
             content = self.contentServer.getContent(getRequest)
             if content.status == payload_pb2.Response.StatusCode.OK:
+                logging.debug('In ContentProxy, getting content from content server for key {0}'.format(key))
                 self.setCacheContent(key, content.data, cache_server_id)
                 return resp.status, content.data
             elif content.status == payload_pb2.Response.StatusCode.NO_SUCH_KEY_ERROR:
+                logging.debug('In ContentProxy, no such key from content server for key {0}'.format(key))
                 return content.status
-
         return resp.status
 
 
