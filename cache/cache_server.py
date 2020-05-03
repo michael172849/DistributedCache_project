@@ -22,7 +22,7 @@ from cache.cache_membership import CacheMembership
 class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
     def __init__(self, server_id):
         super().__init__()
-        self.cache_membership_manager = CacheMembership()
+        self.cache_membership_manager = CacheMembership(server_id)
         self.mContentManager = ContentManager()
         self.mCache = LRUCache(constant.CACHE_SIZE)
         self.serverId = server_id
@@ -77,7 +77,7 @@ def startCacheServer(server_id):
 
     # start cache side membership manager thread to send heartbeat to master...
     cacheServer = LookasideCache(server_id)
-    # cacheServer.cache_membership_manager.start_membership_thread()
+    cacheServer.cache_membership_manager.start_membership_thread()
 
     # start content server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

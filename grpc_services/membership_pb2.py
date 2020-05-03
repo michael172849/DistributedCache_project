@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=b'\n\x10membership.proto\"2\n\tHeartBeat\x12\x13\n\x0bmemoryUsage\x18\x01 \x01(\t\x12\x10\n\x08\x63puUsage\x18\x02 \x01(\t\"h\n\tResultMsg\x12%\n\x06status\x18\x01 \x01(\x0e\x32\x15.ResultMsg.StatusCode\x12\x0b\n\x03msg\x18\x02 \x01(\t\"\'\n\nStatusCode\x12\r\n\tSUCCEEDED\x10\x00\x12\n\n\x06\x46\x41ILED\x10\x01\x32\x41\n\x14MembershipManagement\x12)\n\rSendHeartBeat\x12\n.HeartBeat\x1a\n.ResultMsg\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\x10membership.proto\"I\n\tHeartBeat\x12\x15\n\rcacheServerId\x18\x01 \x01(\t\x12\x13\n\x0bmemoryUsage\x18\x02 \x01(\t\x12\x10\n\x08\x63puUsage\x18\x03 \x01(\t\"h\n\tResultMsg\x12%\n\x06status\x18\x01 \x01(\x0e\x32\x15.ResultMsg.StatusCode\x12\x0b\n\x03msg\x18\x02 \x01(\t\"\'\n\nStatusCode\x12\r\n\tSUCCEEDED\x10\x00\x12\n\n\x06\x46\x41ILED\x10\x01\x32\x41\n\x14MembershipManagement\x12)\n\rSendHeartBeat\x12\n.HeartBeat\x1a\n.ResultMsg\"\x00\x62\x06proto3'
 )
 
 
@@ -40,8 +40,8 @@ _RESULTMSG_STATUSCODE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=137,
-  serialized_end=176,
+  serialized_start=160,
+  serialized_end=199,
 )
 _sym_db.RegisterEnumDescriptor(_RESULTMSG_STATUSCODE)
 
@@ -54,15 +54,22 @@ _HEARTBEAT = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='memoryUsage', full_name='HeartBeat.memoryUsage', index=0,
+      name='cacheServerId', full_name='HeartBeat.cacheServerId', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='cpuUsage', full_name='HeartBeat.cpuUsage', index=1,
+      name='memoryUsage', full_name='HeartBeat.memoryUsage', index=1,
       number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='cpuUsage', full_name='HeartBeat.cpuUsage', index=2,
+      number=3, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -80,7 +87,7 @@ _HEARTBEAT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=20,
-  serialized_end=70,
+  serialized_end=93,
 )
 
 
@@ -118,8 +125,8 @@ _RESULTMSG = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=72,
-  serialized_end=176,
+  serialized_start=95,
+  serialized_end=199,
 )
 
 _RESULTMSG.fields_by_name['status'].enum_type = _RESULTMSG_STATUSCODE
@@ -150,8 +157,8 @@ _MEMBERSHIPMANAGEMENT = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=178,
-  serialized_end=243,
+  serialized_start=201,
+  serialized_end=266,
   methods=[
   _descriptor.MethodDescriptor(
     name='SendHeartBeat',

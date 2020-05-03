@@ -8,3 +8,4 @@ wheel>=0.29
 psutil>=5.5.0
 flask>=1.1.2
 bintrees>=2.1.0
+numpy

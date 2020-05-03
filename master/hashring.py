@@ -3,11 +3,13 @@ from hashlib import md5
 from numpy import log2
 import numpy as np
 import random
+import logging
 import copy
 # maps URI to the cache server id
 # implements https://www.cs.princeton.edu/courses/archive/fall07/cos518/papers/chash.pdf
 DEBUG = False
-
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 # for testing
 if DEBUG:
     random.seed(23333)
@@ -164,6 +166,7 @@ class HashRing:
             return False
 
     def add_single_cache_server(self, cache_server):
+        logger.info("add cache_server {0}".format(cache_server))
         self.add_cache_servers([cache_server])
 
     def add_cache_servers(self, cache_servers):
