@@ -35,12 +35,16 @@ class MasterServer():
         cache_server_id = self.hashring._get_clockwise_cache_server(key)
         return self.content_proxy.getContent(key, cache_server_id)
 
+    def printAnalytics(self, filename = None):
+        self.content_proxy.printAnalytics(filename)
+
 MASTERSERVER = MasterServer()
 
 logging.basicConfig(level=logging.DEBUG)
 
 async def handle(request):
     response_obj = {'status': 'success'}
+    MASTERSERVER.printAnalytics('log/analytics.txt')
     return web.Response(text=json.dumps(response_obj))
 
 async def set_value(request):

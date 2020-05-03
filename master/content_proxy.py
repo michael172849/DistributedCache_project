@@ -10,6 +10,7 @@ from grpc_services import cache_service_pb2_grpc
 from grpc_services import content_service_pb2_grpc
 from grpc_services import payload_pb2
 
+from analytics.analyzer import Analyzer
 import constant
 
 class ContentProxy():
@@ -18,6 +19,8 @@ class ContentProxy():
         self.serverId = server_id
         self.contentChannel = grpc.insecure_channel(constant.PROJECT_DOMAIN + constant.CONTENT_SERVER_PORT)
         self.contentServer = content_service_pb2_grpc.ContentServiceStub(self.contentChannel)
+        self.analyzer = Analyzer()
+        self.analyzer.start()
 
     def invalidate(self, key, cache_server_id):
         request = payload_pb2.Request(client_id = self.serverId,
@@ -102,14 +105,17 @@ class ContentProxy():
 
         if resp.status == payload_pb2.Response.StatusCode.CACHE_HIT:
             logging.debug('getting cache hit for key {0}'.format(key))
+            self.analyzer.addRecord(key, cache_server_id, True)
             return resp.status, resp.data
 
         if resp.status == payload_pb2.Response.StatusCode.CACHE_MISS:
             logging.debug('getting cache miss for key {0} fetching from content server'.format(key))
+            self.analyzer.addRecord(key, cache_server_id, False)
+
             # check if it is granted with the lease
             lease = resp.lease
             if lease == -1:
-                logging.info("didn't get the lease, wait for a few seconds and retry")
+                logging.debug("didn't get the lease, wait for a few seconds and retry")
                 # wait a few seconds and then send the request again
                 time.sleep(constant.MASTER_NO_LEASE_RETRY_TIME)
                 return self.getContet(key, cache_server_id)
@@ -126,7 +132,10 @@ class ContentProxy():
                 return status
         return resp.status
 
-
+    def printAnalytics(self, filename = None):
+        if self.analyzer == None:
+            return
+        self.analyzer.printAnalytics(filename)
 
     
 def test():
