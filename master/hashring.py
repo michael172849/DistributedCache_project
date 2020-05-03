@@ -61,6 +61,8 @@ class HashRing:
         return self._get_clockwise_url(self._val_to_serv_url, self._hash_url(url))
 
     def _get_clockwise_cache_server(self, url):
+        if len(self._val_to_serv_url) == 0:
+            return 'ERROR'
         return self._get_clockwise_url(self._val_to_serv_url, self._hash_url(url))
 
     def _get_clockwise_cache_server_value(self, val):
@@ -179,6 +181,8 @@ class HashRing:
                 raise Exception("Servers not allocated: " + ' '.join(rem_cache_servers))
 
     def remove_cache_server(self, server_url):
+        if not self._val_to_serv_url:
+            return
         for val, url in self._val_to_serv_url.items():
             if url == server_url:
                 del self._val_to_serv_url[val]
@@ -222,4 +226,5 @@ class MD5HashRing(HashRing):
         return int(m.hexdigest(), 16) 
 
 # class DuplicateHashRing(HashRing):
+
 
