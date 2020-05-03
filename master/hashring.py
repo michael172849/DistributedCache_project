@@ -69,16 +69,19 @@ class HashRing:
     def _bisect_segments(self, num_new_buckets):
         """bisect the segments on the hashring so that total number of buckets will be 2^(n+1)
         """
-        new_n = np.ceil(log2(len(self._val_to_serv_url) + num_new_buckets))
-        
-        for n in range(self._n+1, int(new_n)+1):
+        new_n = int(np.ceil(log2(len(self._val_to_serv_url) + num_new_buckets)))
+
+        for n in range(self._n+1, new_n+1):
             new_interval = int(np.ceil(self._max_digest_val / np.power(2, n)))
             for i in range(new_interval, self._max_digest_val, self._interval):
                 self._buckets.append(i)
             self._interval = new_interval
         
         self._n = new_n
-        self._interval = new_interval
+        try:
+            self._interval = new_interval
+        except:
+            print("exceeded capacity")
 
     def _add_servers_to_remaining_buckets(self, cache_servers):
         """this function allocates cache servers to remaining buckets as many as it can
@@ -157,6 +160,9 @@ class HashRing:
             return True
         except:
             return False
+
+    def add_single_cache_server(self, cache_server):
+        self.add_cache_servers([cache_server])
 
     def add_cache_servers(self, cache_servers):
         """adds a cache server to hash ring
