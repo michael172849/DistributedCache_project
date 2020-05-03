@@ -169,7 +169,7 @@ class HashRing:
         """
         # use up all the buckets to add new cache servers
         rem_cache_servers = self._add_servers_to_remaining_buckets(cache_servers)
-        
+
         if rem_cache_servers and not self._buckets:
             if DEBUG:
                 print("adding buckets")
@@ -182,11 +182,17 @@ class HashRing:
         for val, url in self._val_to_serv_url.items():
             if url == server_url:
                 del self._val_to_serv_url[val]
+        self._buckets.append(val)
         # @TODO callback to invalidate all the cache
         old_cache_server = self._cache_trees[server_url]
-        self._cache_trees[self._val_to_serv_url[self._get_clockwise_cache_server_value(val+1)]].update(old_cache_server)
+        try:
+            new_cache_server_url = self._get_clockwise_cache_server_value(val+1)
+            self._cache_trees[self._val_to_serv_url[old_cache_server]].update(old_cache_server)
+        except:
+            pass
         # @TODO callback to send the cache to new cache server
         del self._cache_trees[server_url]
+
     
     def _hash_url(self, url):
         """hashes a URL: preferrably return an integer
