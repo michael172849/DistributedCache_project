@@ -20,15 +20,18 @@ class HeartBeatThread(threading.Thread):
         with grpc.insecure_channel(constant.PROJECT_DOMAIN + constant.HEARTBEAT_PORT) as channel:
             stub = membership_pb2_grpc.MembershipManagementStub(channel)
             while 1:
-                # logger.debug("-------------- Send HeartBeat --------------")
-                pid = os.getpid()
-                py = psutil.Process(pid)
-                memoryUse = py.memory_info()# memory use in MB...I think
-                cpuUse = py.cpu_percent()
-                heartBeat = membership_pb2.HeartBeat(cacheServerId=str(self.cache_server_id), memoryUsage=str(memoryUse), cpuUsage=str(cpuUse))
-                resMsg = stub.SendHeartBeat(heartBeat)
-                # logger.debug('-------------- Receive: {0} ------------'.format(resMsg))
-                time.sleep(5)
+                try:
+                    # logger.debug("-------------- Send HeartBeat --------------")
+                    pid = os.getpid()
+                    py = psutil.Process(pid)
+                    memoryUse = py.memory_info()# memory use in MB...I think
+                    cpuUse = py.cpu_percent()
+                    heartBeat = membership_pb2.HeartBeat(cacheServerId=str(self.cache_server_id), memoryUsage=str(memoryUse), cpuUsage=str(cpuUse))
+                    resMsg = stub.SendHeartBeat(heartBeat)
+                    # logger.debug('-------------- Receive: {0} ------------'.format(resMsg))
+                    time.sleep(5)
+                except Exception as e:
+                    logger.error(e.__traceback__)      
 
 class CacheMembership():
     def __init__(self, cache_server_id):
