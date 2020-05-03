@@ -28,13 +28,13 @@ class ContentProxy():
             return resp.status        
         
     def setContent(self, key, value, cache_server_id):
-        logging.debug('invalidating the key {0}'.format(key))
-        self.invalidate(key, cache_server_id)
         logging.debug('send SetRequest to content server for the key {0}'.format(key))
         setRequest = payload_pb2.Request(client_id = self.serverId,
                                         request_url = key,
                                         data = value)
         resp = self.contentServer.setContent(setRequest)
+        logging.debug('invalidating the key {0}'.format(key))
+        self.invalidate(key, cache_server_id)
         return resp.status
 
     def setCacheContent(self, key, value, cache_server_id):
@@ -51,6 +51,7 @@ class ContentProxy():
                                         request_url = key)
         resp = None
         logging.debug('getting key {0} from cache server {1}'.format(key, cache_server_id))
+        logging.debug(constant.getCacheServerAddr(cache_server_id))
         with grpc.insecure_channel(constant.getCacheServerAddr(cache_server_id)) as channel:
             stub = cache_service_pb2_grpc.CacheServiceStub(channel)
             resp = stub.getContent(getRequest)

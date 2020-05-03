@@ -60,7 +60,7 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         )
         return response
 
-    def invalidate(self, request, content):
+    def invalidate(self, request, context):
         key = request.request_url
         logging.debug("Cache Server invalidate for client ({0}) for url {1}".format (
             request.client_id, key))
@@ -79,20 +79,18 @@ def startCacheServer(server_id):
     cacheServer = LookasideCache(server_id)
     cacheServer.cache_membership_manager.start_membership_thread()
 
-    logging.info("start content server")
-    # start content server
+    # start cache server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     cache_service_pb2_grpc.add_CacheServiceServicer_to_server(cacheServer, server)
 
     address =constant.getCacheServerAddr(server_id) 
-    logging.info("start cache server on address {0}".format(address))
     server.add_insecure_port(address)
     
-    logging.debug("-----------------Start Cache Server {0}--------------".format(server_id))
+    logging.debug("-----------------Start Cache Server {0} on address {1}--------------".format(server_id, address))
     server.start()
     server.wait_for_termination()
 
 
 
 if __name__ == '__main__':
-    startCacheServer(3)
+    startCacheServer(0)
