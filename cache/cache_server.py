@@ -79,11 +79,14 @@ def startCacheServer(server_id):
     cacheServer = LookasideCache(server_id)
     cacheServer.cache_membership_manager.start_membership_thread()
 
+    logging.info("start content server")
     # start content server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     cache_service_pb2_grpc.add_CacheServiceServicer_to_server(cacheServer, server)
 
-    server.add_insecure_port(constant.getCacheServerAddr(server_id))
+    address =constant.getCacheServerAddr(server_id) 
+    logging.info("start cache server on address {0}".format(address))
+    server.add_insecure_port(address)
     
     logging.debug("-----------------Start Cache Server {0}--------------".format(server_id))
     server.start()

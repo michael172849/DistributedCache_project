@@ -35,7 +35,7 @@ class MembershipService(membership_pb2_grpc.MembershipManagementServicer):
         A client to server function call
         """
         if request.cacheServerId not in self.cache_servers.keys():
-            logger.info("Add cache server {0}".format(request.cacheServerId))
+            logger.info("Add cache server {0}: {1}".format(request.cacheServerId, context.peer()))
             self._add_cache_server_call_back(request.cacheServerId)
 
         self.cache_servers[request.cacheServerId] = {
