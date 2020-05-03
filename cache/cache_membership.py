@@ -9,7 +9,7 @@ from grpc_services import membership_pb2, membership_pb2_grpc
 from grpc_services import content_service_pb2_grpc
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 class HeartBeatThread(threading.Thread):
     def __init__(self, cache_server_id):
@@ -21,17 +21,18 @@ class HeartBeatThread(threading.Thread):
             stub = membership_pb2_grpc.MembershipManagementStub(channel)
             while 1:
                 try:
-                    # logger.debug("-------------- Send HeartBeat --------------")
+                    logger.debug("-------------- Send HeartBeat --------------")
                     pid = os.getpid()
                     py = psutil.Process(pid)
                     memoryUse = py.memory_info()# memory use in MB...I think
                     cpuUse = py.cpu_percent()
                     heartBeat = membership_pb2.HeartBeat(cacheServerId=str(self.cache_server_id), memoryUsage=str(memoryUse), cpuUsage=str(cpuUse))
                     resMsg = stub.SendHeartBeat(heartBeat)
-                    # logger.debug('-------------- Receive: {0} ------------'.format(resMsg))
-                    time.sleep(5)
+                    logger.debug('-------------- Receive: {0} ------------'.format(resMsg))
                 except Exception as e:
-                    logger.error(e.__traceback__)      
+                    logger.error(e)   
+                time.sleep(5)
+   
 
 class CacheMembership():
     def __init__(self, cache_server_id):
