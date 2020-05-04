@@ -1,4 +1,5 @@
-from aiohttp import web
+import flask
+import asyncio
 import logging
 import json
 import time
@@ -39,47 +40,57 @@ class MasterServer():
         self.content_proxy.printAnalytics(filename)
 
 MASTERSERVER = MasterServer()
+app = flask.Flask(__name__)
 
-logging.basicConfig(level=logging.DEBUG)
 
-async def handle(request):
-    response_obj = {'status': 'success'}
-    return web.Response(text=json.dumps(response_obj))
+logging.basicConfig(
+    format="%(asctime)s - %(filename)s:%(funcName)s:%(lineno)d(%(levelname)s) - %(message)s",
+    level=logging.DEBUG,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
-async def analyze(request):
+
+@app.route("/analytics")
+def analyze(request):
     response_obj = {'status': 'success'}
     MASTERSERVER.printAnalytics('log/analytics.txt')
-    return web.Response(text=json.dumps(response_obj))
+    return response_obj
 
-async def set_value(request):
-    data = await request.post()
+@app.route("/kv", methods=["POST"])
+def set_value():
     try:
-        key = data['key']
-        value = data['value']
-    except KeyError:
+        key = flask.request.values.get('key')
+        value = flask.request.values.get('value')
+    except:
         logging.error("missing key, value for POST")
         response_obj = {'status': 'error'}
-        return web.Response(text=json.dumps(response_obj)) 
+        return response_obj
 
     re = MASTERSERVER.set_content(key, value)
     response_obj = {'status': re}
-    return web.Response(text=json.dumps(response_obj)) 
+    return response_obj
 
-async def get_value(request):
-    key = request.query['key']
+@app.route("/kv", methods=["GET"])
+def get_value():
+    key = flask.request.args.get('key')
     re = MASTERSERVER.get_content(key)
     response_obj = {'status': re}
-    return web.Response(text=json.dumps(response_obj)) 
+    return response_obj
 
-def run():
-    MASTERSERVER.start_server()
-    app = web.Application()
-    app.router.add_get('/', handle)
-    app.router.add_get('/analytics', analyze)
+@app.route("/slow")
+def slow():
+    logging.info("get slow request")
+    do_stuff()
+    response_obj = {'status': 'success'}
+    return response_obj
 
-    app.router.add_post('/kv', set_value)
-    app.router.add_get('/kv', get_value)
-    web.run_app(app)
+def do_stuff():
+    time.sleep(5)
+    return 1
+
+@app.route('/')
+def hello_world():
+    return 'Hello, World!'
 
 if __name__ == "__main__":
-    run() 
+    MASTERSERVER.start_server()
+    app.run()

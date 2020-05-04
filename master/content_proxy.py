@@ -115,11 +115,10 @@ class ContentProxy():
             # check if it is granted with the lease
             lease = resp.lease
             if lease == -1:
-                logging.debug("didn't get the lease, wait for a few seconds and retry")
-                # wait a few seconds and then send the request again
-                time.sleep(constant.MASTER_NO_LEASE_RETRY_TIME)
-                return self.getContet(key, cache_server_id)
+                logging.debug("didn't get the lease, wait for a {0} seconds and retry".format(constant.MASTER_NO_LEASE_RETRY_TIME))
                 # it does not get the lease, so wait for a few minutes and then resend the request to cache
+                time.sleep(constant.MASTER_NO_LEASE_RETRY_TIME)
+                return self.getContent(key, cache_server_id)
             
             # it has a lease, so let's get content with work
             status, data = self.getContentFromContentServer(getRequest)

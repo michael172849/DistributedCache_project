@@ -6,6 +6,6 @@ protobuf>=3.11.3
 six>=1.14.0
 wheel>=0.29
 psutil>=5.5.0
-aiohttp
+flask
 bintrees>=2.1.0
 numpy

@@ -167,7 +167,6 @@ class HashRing:
             return False
 
     def add_single_cache_server(self, cache_server):
-        logger.info("add cache_server {0}".format(cache_server))
         self.add_cache_servers([cache_server])
 
     def add_cache_servers(self, cache_servers):
@@ -185,7 +184,7 @@ class HashRing:
                 raise Exception("Servers not allocated: " + ' '.join(rem_cache_servers))
 
     def remove_cache_server(self, server_url):
-        logger.info("removed cache_server {0}".format(server_url))
+        logger.debug("removed cache_server {0}".format(server_url))
         if not self._val_to_serv_url:
             return
         for val, url in self._val_to_serv_url.items():
