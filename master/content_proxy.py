@@ -136,6 +136,11 @@ class ContentProxy():
             return
         self.analyzer.printAnalytics(filename)
 
+    def stepAnalytics(self):
+        if self.analyzer == None:
+            return
+        self.analyzer.addStep()
+
     
 def test():
     with grpc.insecure_channel(constant.PROJECT_DOMAIN + str(constant.CACHE_SERVICE_PORT_START + 3)) as channel:

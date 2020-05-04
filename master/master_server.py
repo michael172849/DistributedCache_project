@@ -39,6 +39,9 @@ class MasterServer():
     def printAnalytics(self, filename = None):
         self.content_proxy.printAnalytics(filename)
 
+    def stepAnalytics(self):
+        self.content_proxy.stepAnalytics()
+
 MASTERSERVER = MasterServer()
 app = flask.Flask(__name__)
 
@@ -49,10 +52,16 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S')
 
 
-@app.route("/analytics")
-def analyze(request):
+
+@app.route("/analytics", methods=['GET'])
+def analyze():
     response_obj = {'status': 'success'}
-    MASTERSERVER.printAnalytics('log/analytics.txt')
+    op = flask.request.args.get('op','')
+    filename = flask.request.args.get('file', 'log/analytics.txt')
+    if op == 'print':
+        MASTERSERVER.printAnalytics(filename)
+    elif op == 'step':
+        MASTERSERVER.stepAnalytics()
     return response_obj
 
 @app.route("/kv", methods=["POST"])
