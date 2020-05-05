@@ -32,6 +32,7 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
     def getContent(self, request, context):
         logging.debug("Cache Server get content for client {0} for url {1}".format (
             request.client_id, request.request_url))
+        # logging.debug(self.mCache.cache)
         key = request.request_url
         value = self.mCache.get(key)
         response = None
@@ -60,12 +61,12 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         return response
 
     def setContent(self, request, context):
-        logging.debug("Cache Server set content for client ({0}) for url {1}, lease {2}".format (
-            request.client_id, request.request_url, request.lease))
         key = request.request_url
         value = request.data
         if (key in self.token_granted.keys() and self.token_granted[key] == request.lease) or request.lease == 0:
             # this is valid
+            logging.debug("Cache Server set content for client ({0}) for url {1}, lease {2}".format (
+                request.client_id, request.request_url, request.lease))
             self.mCache.put(key, value)
             self.token_granted.pop(key)
             response = payload_pb2.Response(
@@ -73,6 +74,8 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
                 request_url = key,
             )
         else:
+            logging.debug("Invalid lease for url {1}, lease {2}. Correct lease should be {3}".format (
+                request.client_id, request.request_url, request.lease, self.token_granted[key]))
             # not valid token... return with failed
             response = payload_pb2.Response(
                 status = payload_pb2.Response.StatusCode.FAILED,
