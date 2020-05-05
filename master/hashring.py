@@ -23,6 +23,7 @@ class HashRing:
                cache_servers: list of urls for cache servers
         """
         logger.info("INIT HASHRING")
+        self._shuffle_cache_servers = True
         # Tree that maps buckets to cache servers. Represents the whole hashring.
         self._val_to_serv_url = AVLTree()  
 
@@ -63,12 +64,12 @@ class HashRing:
     def _get_cache_server_url(self, url):
         return self._get_clockwise_url(self._val_to_serv_url, self._hash_url(url))
 
-    def _get_clockwise_cache_server(self, url):
+    def _get_cache_server(self, url):
         if len(self._val_to_serv_url) == 0:
             return 'ERROR'
         return self._get_clockwise_url(self._val_to_serv_url, self._hash_url(url))
 
-    def _get_clockwise_cache_server_value(self, val):
+    def _get_cache_server_value(self, val):
         return self._get_clockwise_value(self._val_to_serv_url, val)
 
     def _bisect_segments(self, num_new_buckets):
@@ -93,16 +94,21 @@ class HashRing:
         """
         if len(self._buckets) == 0:
             return cache_servers
-        random.shuffle(cache_servers)
         random.shuffle(self._buckets)
         new_mappings = AVLTree()
+        
+        alloc_len = min(len(self._buckets), len(cache_servers))
+        buckets_to_be_allocated = self._buckets[:alloc_len]
 
-        for i in range(min(len(self._buckets), len(cache_servers))):
-            new_mappings.insert(self._buckets[i], cache_servers[i])
+        if not self._shuffle_cache_servers:
+            buckets_to_be_allocated.sort()
+
+        for i in range(alloc_len):
+            new_mappings.insert(buckets_to_be_allocated[i], cache_servers[i])
             self._cache_trees[cache_servers[i]] = AVLTree()
 
-        rem_buckets = self._buckets[i+1:]
-        rem_cache_servers = cache_servers[i+1:]
+        rem_buckets = self._buckets[alloc_len:]
+        rem_cache_servers = cache_servers[alloc_len:]
 
         for old_bucket_val in self._val_to_serv_url.keys():
             try:
@@ -139,7 +145,13 @@ class HashRing:
         self._buckets = rem_buckets
         return rem_cache_servers
 
-    def get_cache_server(self, url):
+    def shuffle_cache_servers(self):
+        self._shuffle_cache_servers = True
+    
+    def no_shuffle_cache_servers(self):
+        self._shuffle_cache_servers = False
+
+    def get_cache_server_with_check(self, url):
         """returns a cache server in which the cache is stored
         raises KeyError if url is not found @TODO how to handle this?
         """
@@ -187,18 +199,19 @@ class HashRing:
         logger.debug("removed cache_server {0}".format(server_url))
         if not self._val_to_serv_url:
             return
-        for val, url in self._val_to_serv_url.items():
+        items = (copy.deepcopy(self._val_to_serv_url)).items()
+        for val, url in items:
             if url == server_url:
                 del self._val_to_serv_url[val]
-        self._buckets.append(val)
-        # @TODO callback to invalidate all the cache
-        old_cache_server = self._cache_trees[server_url]
-        try:
-            new_cache_server_url = self._get_clockwise_cache_server_value(val+1)
-            self._cache_trees[self._val_to_serv_url[old_cache_server]].update(old_cache_server)
-        except:
-            pass
-        # @TODO callback to send the cache to new cache server
+                self._buckets.append(val)
+                # @TODO callback to invalidate all the cache
+                old_cache_server = self._cache_trees[server_url]
+                try:
+                    new_cache_server_url = self._get_clockwise_cache_server_value(val+1)
+                    self._cache_trees[self._val_to_serv_url[old_cache_server]].update(old_cache_server)
+                except:
+                    pass
+                # @TODO callback to send the cache to new cache server
         del self._cache_trees[server_url]
 
     
