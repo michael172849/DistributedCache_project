@@ -13,7 +13,7 @@ domain = "http://0.0.0.0:5000/"
 content_url = domain + "kv"
 analytics_url = domain + 'analytics'
 
-num_entries = 10
+num_entries = 5s
 str_len_a = 3
 str_len_b = 20
 random_data = {}
@@ -42,10 +42,10 @@ def printAnalytics():
 
 def fetch_all():
     for k in random_data:
-        sendPostRequests(k)
+        sendGetRequest(k)
 
 def generate_random_string(len):
-    pool = string.letters + string.digits + string.punctuation 
+    pool = string.ascii_letters + string.digits 
     return ''.join(random.choice(pool) for i in range(len))
 
 def step1():
