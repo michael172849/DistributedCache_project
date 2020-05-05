@@ -48,7 +48,7 @@ app = flask.Flask(__name__)
 
 logging.basicConfig(
     format="%(asctime)s - %(filename)s:%(funcName)s:%(lineno)d(%(levelname)s) - %(message)s",
-    level=logging.DEBUG,
+    level=constant.PROJ_LOG_LEVEL,
     datefmt='%Y-%m-%d %H:%M:%S')
 
 

@@ -3,6 +3,7 @@ import sys
 
 sys.path.append(os.path.abspath("."))
 from grpc_services import payload_pb2
+import logging
 
 PROJECT_DOMAIN = '[::]:'
 CONTENT_SERVER_PORT = '50052'
@@ -27,7 +28,7 @@ CONNECTION_CACHE_SERVER_FAILED = 1001
 NO_AVAILABLE_CACHE_SERVER = 1002
 
 # Cache server related
-CACHE_SIZE = 100
+CACHE_SIZE = 1000
 CACHE_SERVER_COUNT = 3
 CACHE_TOKEN_RATE_LIMITER = 10
 MASTER_NO_LEASE_RETRY_TIME = 1
@@ -49,3 +50,4 @@ def getCacheServerAddr(cache_server_id):
     return PROJECT_DOMAIN + str(CACHE_SERVICE_PORT_START + cache_server_id)
 
 
+PROJ_LOG_LEVEL = logging.INFO

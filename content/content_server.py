@@ -63,5 +63,5 @@ def main():
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=constant.PROJ_LOG_LEVEL)
     main()

@@ -5,15 +5,16 @@ import logging
 import string
 import random
 
+
 sys.path.append(os.path.abspath("."))
+import constant
 
-
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=constant.PROJ_LOG_LEVEL)
 domain = "http://0.0.0.0:5000/"
 content_url = domain + "kv"
 analytics_url = domain + 'analytics'
 log_filename = 'log/analytics.txt'
-num_entries = 100
+num_entries = 1000
 str_len_a = 3
 str_len_b = 20
 random_data = {}

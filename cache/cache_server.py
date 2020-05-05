@@ -98,7 +98,7 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
         return response  
 
 def startCacheServer(server_id):
-    logging.basicConfig(filename='log/cache_log_{0}'.format(server_id), filemode='w', level=logging.DEBUG)
+    logging.basicConfig(filename='log/cache_log_{0}'.format(server_id), filemode='w', level=constant.PROJ_LOG_LEVEL)
 
     # start cache side membership manager thread to send heartbeat to master...
     cacheServer = LookasideCache(server_id)
