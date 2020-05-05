@@ -227,6 +227,17 @@ class HashRing:
         """
         raise NotImplementedError()
 
+class CustomSizeHashRing(HashRing):
+    def __init__(self, cache_servers, max_size):
+        self._max_digest_val = max_size
+        self._hash_func = md5
+        super().__init__(cache_servers)
+
+    def _hash_url(self, url):
+        m = self._hash_func()
+        m.update(url.encode())
+        return int(m.hexdigest(), 16) % self._max_digest_val
+
 class SimpleHashRing(HashRing):
     def __init__(self, cache_servers):
         self._max_digest_val = 2 ** 5 - 1
@@ -258,6 +269,14 @@ class DuplicateSimpleHashRing(SimpleHashRing):
         super().add_cache_servers(cache_servers * self.dup_num)
 
 class DuplicateMD5HashRing(MD5HashRing):
+    def __init__(self, cache_servers, dup_num):
+        super().__init__(cache_servers * dup_num)
+        self.dup_num = dup_num
+
+    def add_cache_servers(self, cache_servers):
+        super().add_cache_servers(cache_servers * self.dup_num)
+
+class DuplicateCustomSizeHashRing(CustomSizeHashRing):
     def __init__(self, cache_servers, dup_num):
         super().__init__(cache_servers * dup_num)
         self.dup_num = dup_num
