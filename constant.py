@@ -5,6 +5,7 @@ sys.path.append(os.path.abspath("."))
 from grpc_services import payload_pb2
 import logging
 
+# PORT
 PROJECT_DOMAIN = '[::]:'
 CONTENT_SERVER_PORT = '50052'
 
@@ -17,9 +18,11 @@ HEARTBEAT_TIMEOUT = 15
 CACHE_SERVICE_PORT_START = 50055
 
 # Content server related
-CONTENT_GET_DELAY_SECOND = 0
-CONTENT_POST_DELAY_SECOND = 0
+CONTENT_GET_DELAY_SECOND = 5
+CONTENT_POST_DELAY_SECOND = 1
 
+# feature
+LEASE_MODE = True
 
 # Error code
 NO_SUCH_KEY_ERROR = 1

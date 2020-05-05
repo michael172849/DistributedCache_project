@@ -43,7 +43,8 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
                 lease = int(time.time())
                 # store the lease
                 self.token_granted[key] = lease
-
+            if not constant.LEASE_MODE:
+                lease = 0
             response = payload_pb2.Response(
                 status = payload_pb2.Response.StatusCode.CACHE_MISS,
                 request_url = key,
@@ -63,7 +64,7 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
             request.client_id, request.request_url, request.lease))
         key = request.request_url
         value = request.data
-        if key in self.token_granted.keys() and self.token_granted[key] == request.lease:
+        if (key in self.token_granted.keys() and self.token_granted[key] == request.lease) or request.lease == 0:
             # this is valid
             self.mCache.put(key, value)
             self.token_granted.pop(key)

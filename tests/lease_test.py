@@ -79,11 +79,14 @@ class TestLease(unittest.TestCase):
         thread1.start()
         time.sleep(1)
         thread2.start()
-        thread3.start()
 
         thread1.join()
         thread2.join()
+
+        thread3.start()
         thread3.join()
+        thread4.start()
+        thread4.join()
         logger.info("---------------------------Finished----------------------------------")
 
 def send_get_thread(url, payload):
