@@ -75,14 +75,14 @@ def set_value():
         return response_obj
 
     re = MASTERSERVER.set_content(key, value)
-    response_obj = {'status': re}
+    response_obj = {'status': constant.STATUS_MAP[re]}
     return response_obj
 
 @app.route("/kv", methods=["GET"])
 def get_value():
     key = flask.request.args.get('key')
-    re = MASTERSERVER.get_content(key)
-    response_obj = {'status': re}
+    status, data = MASTERSERVER.get_content(key)
+    response_obj = {'status': constant.STATUS_MAP[status], 'data': data}
     return response_obj
 
 @app.route("/slow")

@@ -128,8 +128,8 @@ class ContentProxy():
                 set_cache_thread.start()
                 return resp.status, data
             else: 
-                return status
-        return resp.status
+                return status, data
+        return resp.status, resp.data
 
     def printAnalytics(self, filename = None):
         if self.analyzer == None:
