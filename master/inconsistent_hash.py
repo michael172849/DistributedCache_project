@@ -8,7 +8,7 @@ class InconsistentHash:
     def _get_cache_server(self, url):
         if self.num_cache_servers == 0:
             return "GET_CACHE_SERVER ERROR"
-        return self.cache_servers[int(self._hash_url(url) / (self._max_digest_val / self.num_cache_servers))]
+        return self.cache_servers[int(self._hash_url(url) % self.num_cache_servers)]
 
     def add_single_cache_server(self, cache_server):
         self.num_cache_servers += 1
