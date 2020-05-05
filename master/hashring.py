@@ -36,8 +36,8 @@ class HashRing:
         # divide the hash ring into 2^n intervals
         self._num_buckets = np.power(2, self._n)
         # make interval * (2 ^ n) is slightly bigger than the max_digest_val
-        self._interval = int(np.ceil(self._max_digest_val / self._num_buckets))
-        self._buckets = [i for i in range(0, self._max_digest_val, self._interval)]
+        self._interval = int(np.ceil(self._max_size / self._num_buckets))
+        self._buckets = [i for i in range(0, self._max_size, self._interval)]
 
         # one balancing binary tree is used per bucket to store urls. Represents single cache server 
         # an element in a tree maps hashed url to url itself
@@ -76,11 +76,15 @@ class HashRing:
     def _bisect_segments(self, num_new_buckets):
         """bisect the segments on the hashring so that total number of buckets will be 2^(n+1)
         """
+        if(len(self._val_to_serv_url) + num_new_buckets > self._max_size):
+            print("exceeded capacity yo")
+            return
+
         new_n = int(np.ceil(log2(len(self._val_to_serv_url) + num_new_buckets)))
 
         for n in range(self._n+1, new_n+1):
-            new_interval = int(np.ceil(self._max_digest_val / np.power(2, n)))
-            for i in range(new_interval, self._max_digest_val, self._interval):
+            new_interval = int(np.ceil(self._max_size / np.power(2, n)))
+            for i in range(new_interval, self._max_size, self._interval):
                 self._buckets.append(i)
             self._interval = new_interval
         
@@ -122,11 +126,11 @@ class HashRing:
                 
                 clockwise_val_to_new_bucket = new_bucket_val - int(hashed_url)
                 if clockwise_val_to_new_bucket < 0:
-                    clockwise_val_to_new_bucket += self._max_digest_val + 1
+                    clockwise_val_to_new_bucket += self._max_size
 
                 clockwise_val_to_old_bucket = old_bucket_val - int(hashed_url)
                 if clockwise_val_to_old_bucket < 0:
-                    clockwise_val_to_old_bucket += self._max_digest_val + 1
+                    clockwise_val_to_old_bucket += self._max_size
 
                 # print("for item " + str(hashed_url))
                 # print("old server val " + str(old_bucket_val))
@@ -228,30 +232,30 @@ class HashRing:
         raise NotImplementedError()
 
 class CustomSizeHashRing(HashRing):
-    def __init__(self, cache_servers, max_size):
-        self._max_digest_val = max_size
+    def __init__(self, cache_servers, n):
+        self._max_size = 2 ** n
         self._hash_func = md5
         super().__init__(cache_servers)
 
     def _hash_url(self, url):
         m = self._hash_func()
         m.update(url.encode())
-        return int(m.hexdigest(), 16) % self._max_digest_val
+        return int(m.hexdigest(), 16) % self._max_size
 
 class SimpleHashRing(HashRing):
     def __init__(self, cache_servers):
-        self._max_digest_val = 2 ** 5 - 1
+        self._max_size = 2 ** 5
         self._hash_func = md5
         super().__init__(cache_servers)
 
     def _hash_url(self, url):
         m = self._hash_func()
         m.update(url.encode())
-        return int(m.hexdigest(), 16) % self._max_digest_val
+        return int(m.hexdigest(), 16) % self._max_size
 
 class MD5HashRing(HashRing):
     def __init__(self, cache_servers):
-        self._max_digest_val = 2 ** 128 - 1
+        self._max_size = 2 ** 128
         self._hash_func = md5
         super().__init__(cache_servers)
 
