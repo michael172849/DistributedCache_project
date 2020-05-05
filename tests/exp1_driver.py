@@ -23,18 +23,18 @@ def sendPostRequests(key, value):
     data = {'key': key, 'value': value}
     logging.debug("POST {0}".format(str(data)))
     r = requests.post(content_url, data=data)
-    logging.info("re: {0}".format(r.text))
+    logging.debug("re: {0}".format(r.text))
 
 def sendGetRequest(key):
     payload = 'key=' + key
     logging.debug('GET {0}'.format(str(payload)))
     r = requests.get(content_url + '?' + payload)
-    logging.info('resp: {0}'.format(r.text))
+    logging.debug('resp: {0}'.format(r.text))
 
 def stepInc():
     logging.debug('step increase')
     r = requests.get(analytics_url + '?' + 'op=step')
-    logging.info('resp: {0}'.format(r.text))
+    logging.debug('resp: {0}'.format(r.text))
 
 def printAnalytics(file = False):
     logging.debug('print analytics')
@@ -42,7 +42,7 @@ def printAnalytics(file = False):
         r = requests.get(analytics_url + '?' + 'op=print&file=' + log_filename)
     else:
         r = requests.get(analytics_url + '?' + 'op=print')
-    logging.info('resp: {0}'.format(r.text))
+    logging.debug('resp: {0}'.format(r.text))
 
 def fetch_all():
     for k in random_data:
