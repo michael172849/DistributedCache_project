@@ -57,7 +57,7 @@ logging.basicConfig(
 def analyze():
     response_obj = {'status': 'success'}
     op = flask.request.args.get('op','')
-    filename = flask.request.args.get('file', 'log/analytics.txt')
+    filename = flask.request.args.get('file', None)
     if op == 'print':
         MASTERSERVER.printAnalytics(filename)
     elif op == 'step':

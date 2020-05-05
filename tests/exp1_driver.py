@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.DEBUG)
 domain = "http://0.0.0.0:5000/"
 content_url = domain + "kv"
 analytics_url = domain + 'analytics'
-
-num_entries = 20
+log_filename = 'log/analytics.txt'
+num_entries = 50
 str_len_a = 3
 str_len_b = 20
 random_data = {}
@@ -35,9 +35,12 @@ def stepInc():
     r = requests.get(analytics_url + '?' + 'op=step')
     logging.info('resp: {0}'.format(r.text))
 
-def printAnalytics():
+def printAnalytics(file = False):
     logging.debug('print analytics')
-    r = requests.get(analytics_url + '?' + 'op=print')
+    if file:
+        r = requests.get(analytics_url + '?' + 'op=print&file=' + log_filename)
+    else:
+        r = requests.get(analytics_url + '?' + 'op=print')
     logging.info('resp: {0}'.format(r.text))
 
 def fetch_all():
@@ -79,12 +82,15 @@ def cmdInterface():
             exp_steps[curStep]()
             curStep += 1
             stepInc()
-        if cmd == 'p':
+        elif cmd == 'p':
+            printAnalytics(True)
+        elif cmd == 'pc':
             printAnalytics()
         else:
             print('No such command! Available commands are:')
             print('1. s \t \tstep to next step.')
-            print('2. p \t \tprint analytics.')
+            print('2. p \t \tprint analytics to file.')
+            print('3. pc \t \tprint analytics to console.')
 
             print()
 
