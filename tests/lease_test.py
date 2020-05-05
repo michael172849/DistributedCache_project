@@ -19,6 +19,7 @@ class TestLease(unittest.TestCase):
         """one of the get thread should be cache miss, and all others be cache hit
             This also reduces content server load
         """
+        start_time = time.time()
         logger.info("--------------------------Test thundering herd ----------------------------------------")
         data = {'key': 'test_lease_1', 'value': 'hello CS380'}
         r = requests.post(self.kv_url, data=data)
@@ -36,9 +37,11 @@ class TestLease(unittest.TestCase):
         thread2.join()
         thread3.join()
         thread4.join()
-        logger.info("---------------------------Finished----------------------------------")
+        time_spend = time.time() - start_time
+        logger.info("---------------------------Finished: time spent {0}s----------------------------------".format(time_spend))
 
     def test_2_lease_latency(self):
+        start_time = time.time()
         logger.info("---------------------------Test Lease latency ----------------------------------------")
         data = {'key': 'test_lease_2', 'value': 'Nice job!!!'}
         r = requests.post(self.kv_url, data=data)
@@ -59,9 +62,11 @@ class TestLease(unittest.TestCase):
         thread2.join()
         thread3.join()
         thread4.join()
-        logger.info("---------------------------Finished----------------------------------")
+        time_spend = time.time() - start_time
+        logger.info("---------------------------Finished: time spent {0}s----------------------------------".format(time_spend))
 
     def test_3_lease_stale_data(self):
+        start_time = time.time()
         logger.info("---------------------------Test stale data ----------------------------------------")
         data = {'key': 'test_lease_3', 'value': 'OH Before update!!!'}
 
@@ -87,7 +92,8 @@ class TestLease(unittest.TestCase):
         thread3.join()
         thread4.start()
         thread4.join()
-        logger.info("---------------------------Finished----------------------------------")
+        time_spend = time.time() - start_time
+        logger.info("---------------------------Finished: time spent {0}s----------------------------------".format(time_spend))
 
 def send_get_thread(url, payload):
     start_time = time.time()
