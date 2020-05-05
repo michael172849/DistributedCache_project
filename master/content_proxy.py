@@ -97,6 +97,7 @@ class ContentProxy():
                 resp = stub.getContent(getRequest)
         except:
             logging.error("getting key {0} from cache server {1} failed.".format(key, cache_server_id))
+            self.analyzer.addRecord(key, cache_server_id, False)
             status, content = self.getContentFromContentServer(getRequest)
             if status == payload_pb2.Response.StatusCode.OK:
                 return constant.CONNECTION_CACHE_SERVER_FAILED, content
