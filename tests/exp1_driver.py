@@ -13,7 +13,7 @@ domain = "http://0.0.0.0:5000/"
 content_url = domain + "kv"
 analytics_url = domain + 'analytics'
 
-num_entries = 5s
+num_entries = 5
 str_len_a = 3
 str_len_b = 20
 random_data = {}
