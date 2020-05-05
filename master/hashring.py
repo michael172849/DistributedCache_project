@@ -5,6 +5,7 @@ import numpy as np
 import random
 import logging
 import copy
+from collections import Counter
 # maps URI to the cache server id
 # implements https://www.cs.princeton.edu/courses/archive/fall07/cos518/papers/chash.pdf
 DEBUG = False
@@ -145,6 +146,9 @@ class HashRing:
         self._buckets = rem_buckets
         return rem_cache_servers
 
+    def _get_distribution(self):
+        return Counter(self._val_to_serv_url)
+
     def shuffle_cache_servers(self):
         self._shuffle_cache_servers = True
     
@@ -195,6 +199,8 @@ class HashRing:
             if rem_cache_servers:
                 raise Exception("Servers not allocated: " + ' '.join(rem_cache_servers))
 
+        logging.info(self._val_to_serv_url)
+
     def remove_cache_server(self, server_url):
         logger.debug("removed cache_server {0}".format(server_url))
         if not self._val_to_serv_url:
@@ -214,6 +220,7 @@ class HashRing:
                 # @TODO callback to send the cache to new cache server
         del self._cache_trees[server_url]
 
+        logging.info(self._val_to_serv_url)
     
     def _hash_url(self, url):
         """hashes a URL: preferrably return an integer
