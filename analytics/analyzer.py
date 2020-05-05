@@ -1,8 +1,9 @@
 import os, sys
+sys.path.append(os.path.abspath("."))
+import constant
 
 init_hit_dict = {'hit':0, 'miss':0}
 class Analyzer():
-    
     def __init__(self):
         super().__init__()
         self.hit_rate = {}
@@ -14,7 +15,7 @@ class Analyzer():
         self.log[self.curStep] = []
     
     def addRecord(self, key, cache_server_id, isHit):
-        if isHit:
+        if isHit == constant.STATUS_CODE.CACHE_HIT:
             self.hit_rate[self.curStep]['hit'] += 1
         else:
             self.hit_rate[self.curStep]['miss'] += 1
@@ -39,10 +40,12 @@ class Analyzer():
     def getPrintLog(self, step):
         out = ''
         for r in self.log[step]:
-            if r['is_hit']:
+            if r['is_hit'] == constant.STATUS_CODE.CACHE_HIT:
                 out += 'Cache hit for key "{0}" in server {1}\n'.format(r['key'], r['cache_id'])
-            else:
+            elif r['is_hit'] == constant.STATUS_CODE.CACHE_MISS:
                 out += 'Cache miss for key "{0}" in server {1}\n'.format(r['key'], r['cache_id'])
+            elif r['is_hit'] == constant.STATUS_CODE.CONNECTION_CACHE_SERVER_FAILED:
+                out += 'Cache fail for key "{0}" in server {1}\n'.format(r['key'], r['cache_id'])
 
         return out
 

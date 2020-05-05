@@ -97,7 +97,7 @@ class ContentProxy():
                 resp = stub.getContent(getRequest)
         except:
             logging.error("getting key {0} from cache server {1} failed.".format(key, cache_server_id))
-            self.analyzer.addRecord(key, cache_server_id, False)
+            self.analyzer.addRecord(key, cache_server_id, constant.STATUS_CODE.CONNECTION_CACHE_SERVER_FAILED)
             status, content = self.getContentFromContentServer(getRequest)
             if status == payload_pb2.Response.StatusCode.OK:
                 return constant.CONNECTION_CACHE_SERVER_FAILED, content
@@ -106,12 +106,12 @@ class ContentProxy():
 
         if resp.status == payload_pb2.Response.StatusCode.CACHE_HIT:
             logging.debug('getting cache hit for key {0}'.format(key))
-            self.analyzer.addRecord(key, cache_server_id, True)
+            self.analyzer.addRecord(key, cache_server_id, constant.STATUS_CODE.CACHE_HIT)
             return resp.status, resp.data
 
         if resp.status == payload_pb2.Response.StatusCode.CACHE_MISS:
             logging.debug('getting cache miss for key {0} fetching from content server'.format(key))
-            self.analyzer.addRecord(key, cache_server_id, False)
+            self.analyzer.addRecord(key, cache_server_id, constant.STATUS_CODE.CACHE_MISS)
 
             # check if it is granted with the lease
             lease = resp.lease

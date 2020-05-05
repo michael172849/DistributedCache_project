@@ -58,21 +58,29 @@ def step1():
         value = generate_random_string(random.randint(str_len_a, str_len_b))
         random_data[key] = value
         sendPostRequests(key, value)
+    logging.info('step finished')
+
 
 def step2():
     fetch_all()
+    logging.info('step finished')
 
 def step3():
     fetch_all()
+    logging.info('step finished')
+
 
 def step4():
     fetch_all()
+    logging.info('step finished')
 
 def step5():
     fetch_all()
+    logging.info('step finished')
 
 def step6():
     fetch_all()
+    logging.info('step finished')
 
 
 

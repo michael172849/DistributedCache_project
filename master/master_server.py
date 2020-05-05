@@ -8,15 +8,17 @@ sys.path.append(os.path.abspath("."))
 import constant
 from master.membership_manager import MembershipManager
 from master.content_proxy import ContentProxy
-from master.hashring import SimpleHashRing
+from master.hashring import DuplicateSimpleHashRing, SimpleHashRing, DuplicateMD5HashRing
 from master.inconsistent_hash import InconsistentMd5Hash
+
 
 class MasterServer():
     def __init__(self):
         self.membership_manager = MembershipManager(self.add_cache_server, self.rm_cache_server)
         self.content_proxy = ContentProxy(constant.MASTER_SERVER_ID)
-        # self.hashring = SimpleHashRing(self.membership_manager.get_cache_server_list())
-        self.hashring = InconsistentMd5Hash(self.membership_manager.get_cache_server_list())
+        self.hashring = SimpleHashRing(self.membership_manager.get_cache_server_list())
+        # self.hashring = InconsistentMd5Hash(self.membership_manager.get_cache_server_list())
+        # self.hashring = DuplicateSimpleHashRing(self.membership_manager.get_cache_server_list(), 4)
 
     def add_cache_server(self, server_url):
         self.hashring.add_single_cache_server(server_url)
