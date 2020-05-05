@@ -14,6 +14,10 @@ class InconsistentHash:
         self.num_cache_servers += 1
         self.cache_servers.append(cache_server)
 
+    def remove_cache_server(self, cache_server):
+        self.num_cache_servers -= 1
+        self.cache_servers.remove(cache_server)
+
 class InconsistentMd5Hash(InconsistentHash):
     def __init__(self, cache_servers):
         self._max_digest_val = 2 ** 128 - 1
