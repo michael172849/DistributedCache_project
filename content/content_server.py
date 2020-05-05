@@ -27,8 +27,8 @@ class ContentServer(content_service_pb2_grpc.ContentServiceServicer):
         response = payload_pb2.Response (
             status = payload_pb2.Response.StatusCode.OK
         )
-        logging.debug("sleep 2 seconds before getting back")
-        time.sleep(2)
+        # logging.debug("sleep 2 seconds before getting back")
+        # time.sleep(2)
         
         return response
 
@@ -48,8 +48,8 @@ class ContentServer(content_service_pb2_grpc.ContentServiceServicer):
                 status = payload_pb2.Response.StatusCode.NO_SUCH_KEY_ERROR,
                 request_url = key,
             )
-        logging.debug("sleep 5 seconds before getting back")
-        time.sleep(5)
+        # logging.debug("sleep 5 seconds before getting back")
+        # time.sleep(5)
         return response
 
 def main():
