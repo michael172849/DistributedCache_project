@@ -68,14 +68,15 @@ class LookasideCache(cache_service_pb2_grpc.CacheServiceServicer):
             logging.debug("Cache Server set content for client ({0}) for url {1}, lease {2}".format (
                 request.client_id, request.request_url, request.lease))
             self.mCache.put(key, value)
-            self.token_granted.pop(key)
+            if key in self.token_granted.keys():
+                self.token_granted.pop(key)
             response = payload_pb2.Response(
                 status = payload_pb2.Response.StatusCode.OK,
                 request_url = key,
             )
         else:
             logging.debug("Invalid lease for url {1}, lease {2}. Correct lease should be {3}".format (
-                request.client_id, request.request_url, request.lease, self.token_granted[key]))
+                request.client_id, request.request_url, request.lease, self.token_granted.get(key, "NO LEASE")))
             # not valid token... return with failed
             response = payload_pb2.Response(
                 status = payload_pb2.Response.StatusCode.FAILED,
