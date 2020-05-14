@@ -14,7 +14,7 @@ domain = "http://0.0.0.0:5000/"
 content_url = domain + "kv"
 analytics_url = domain + 'analytics'
 log_filename = 'log/analytics.txt'
-num_entries = 1000
+num_entries = 10000
 str_len_a = 3
 str_len_b = 20
 random_data = {}
@@ -82,11 +82,15 @@ def step6():
     fetch_all()
     logging.info('step finished')
 
+def step7():
+    fetch_all()
+    logging.info('step finished')
+
 
 
 def cmdInterface():
     curStep = 0
-    exp_steps = [step1, step2, step3, step4, step5, step6]
+    exp_steps = [step1, step2, step3, step4, step5, step6, step7]
 
     while True:
         cmd = input()
